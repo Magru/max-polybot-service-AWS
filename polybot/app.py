@@ -7,7 +7,7 @@ app = flask.Flask(__name__)
 
 
 # TODO load TELEGRAM_TOKEN value from Secret Manager
-TELEGRAM_TOKEN = '6721551515:AAE9sGJ-RA2sIC7rkosjus5KnXMZfbAWsZQ'
+
 # TELEGRAM_APP_URL = os.environ['TELEGRAM_APP_URL']
 TELEGRAM_APP_URL = 'primary-stable-lioness.ngrok-free.app'
 
