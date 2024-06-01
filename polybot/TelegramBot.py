@@ -2,10 +2,13 @@ import telebot
 from loguru import logger
 import os
 import time
+import json
 from telebot.types import InputFile
+from ObjectDetectionHandler import ObjectDetectionHandler
+from ImageProcessingHandler import ImageProcessingBot
 
 
-class Bot:
+class TelegramBot:
 
     def __init__(self, token, telegram_chat_url):
         # create a new instance of the TeleBot class.
@@ -19,6 +22,9 @@ class Bot:
         # set the webhook URL
         self.telegram_bot_client.set_webhook(url=f'{telegram_chat_url}/{token}/', timeout=60)
 
+        with open('messages.json') as f:
+            self.messages = json.load(f)
+
         logger.info(f'Telegram Bot information\n\n{self.telegram_bot_client.get_me()}')
 
     def send_text(self, chat_id, text):
@@ -27,7 +33,8 @@ class Bot:
     def send_text_with_quote(self, chat_id, text, quoted_msg_id):
         self.telegram_bot_client.send_message(chat_id, text, reply_to_message_id=quoted_msg_id)
 
-    def is_current_msg_photo(self, msg):
+    @staticmethod
+    def is_current_msg_photo(msg):
         return 'photo' in msg
 
     def download_user_photo(self, msg):
@@ -59,19 +66,36 @@ class Bot:
             InputFile(img_path)
         )
 
+    def text_response_handler(self, command, chat_id):
+        """
+        Handles commands sent to the Telegram bot with the inclusion of chat ID.
+
+        Args:
+        - command (str): The command sent to the bot.
+        - chat_id (int): The unique identifier for the chat.
+
+        Returns:
+        - str: The response message.
+        """
+        message = self.messages.get(command.lstrip("/"), self.messages['default_response'])
+        return message.format(chat_id=chat_id)
+
     def handle_message(self, msg):
         """Bot Main message handler"""
-        logger.info(f'Incoming message: {msg}')
-        self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
-
-
-class ObjectDetectionBot(Bot):
-    def handle_message(self, msg):
-        logger.info(f'Incoming message: {msg}')
+        # logger.info(f'Incoming message: {msg}')
+        chat_id = msg['chat']['id']
 
         if self.is_current_msg_photo(msg):
-            photo_path = self.download_user_photo(msg)
+            image = self.download_user_photo(msg)
+            try:
+                img_proc = ImageProcessingBot(msg, image)
+                response_image = img_proc.get_filtered_image_path()
+                self.send_photo(chat_id, response_image)
+                img_proc.clean_images()
+            except Exception as e:
+                self.send_text(chat_id, self.text_response_handler(str(e), chat_id))
 
-            # TODO upload the photo to S3
-            # TODO send a job to the SQS queue
-            # TODO send message to the Telegram end-user (e.g. Your image is being processed. Please wait...)
+        else:
+            self.send_text(chat_id, self.text_response_handler(msg['text'], chat_id))
+
+
