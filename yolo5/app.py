@@ -47,11 +47,12 @@ def consume():
 
             logger.info(f'prediction: {prediction_id}/{original_img_path}. done')
 
-            # This is the path for the predicted image with labels
-            # The predicted image typically includes bounding boxes drawn around the detected objects, along with class labels and possibly confidence scores.
+            # This is the path for the predicted image with labels The predicted image typically includes bounding
+            # boxes drawn around the detected objects, along with class labels and possibly confidence scores.
             predicted_img_path = Path(f'static/data/{prediction_id}/{original_img_path}')
 
-            # TODO Uploads the predicted image (predicted_img_path) to S3 (be careful not to override the original image).
+            # TODO Uploads the predicted image (predicted_img_path) to S3 (be careful not to override the original
+            #  image).
 
             # Parse prediction labels and create a summary
             pred_summary_path = Path(f'static/data/{prediction_id}/labels/{original_img_path.split(".")[0]}.txt')
