@@ -84,10 +84,7 @@ jobs:
     - name: Deploy to AWS EC2
       run: |
         for IP in ${{ env.INSTANCE_IPS }}; do
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << EOF
           cd /path/to/your/project
           export $(grep -v '^#' polybot/.env | xargs)
-          docker-compose pull polybot
-          docker-compose up -d
-          EOF
-        done
+          docker-comp
