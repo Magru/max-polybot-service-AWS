@@ -37,9 +37,12 @@ jobs:
       id: capture-output
       run: |
         echo "Capturing instance IPs..."
-        INSTANCE_IPS=$(terraform output -json app_server_instance_ips | jq -r '.[]' | tr '\n' ' ')
-        echo "Captured INSTANCE_IPS: $INSTANCE_IPS"
-        echo "INSTANCE_IPS=$INSTANCE_IPS" >> $GITHUB_ENV
+        APP_SERVER_IP=$(terraform output -raw app_server_instance_ip)
+        APP_SERVER_2_IP=$(terraform output -raw app_server_2_instance_ip)
+        echo "Captured APP_SERVER_IP: $APP_SERVER_IP"
+        echo "Captured APP_SERVER_2_IP: $APP_SERVER_2_IP"
+        echo "APP_SERVER_IP=$APP_SERVER_IP" >> $GITHUB_ENV
+        echo "APP_SERVER_2_IP=$APP_SERVER_2_IP" >> $GITHUB_ENV
       working-directory: terraform
 
     - name: Read .env file
@@ -75,8 +78,8 @@ jobs:
 
     - name: Deploy to AWS EC2
       run: |
-        echo "Deploying to instances: ${{ env.INSTANCE_IPS }}"
-        for IP in ${{ env.INSTANCE_IPS }}; do
+        echo "Deploying to instances: $APP_SERVER_IP and $APP_SERVER_2_IP"
+        for IP in $APP_SERVER_IP $APP_SERVER_2_IP; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << 'EOF'
           cd /path/to/your/project
           export $(grep -v '^#' polybot/.env | xargs)
