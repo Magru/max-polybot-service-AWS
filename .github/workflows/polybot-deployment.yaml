@@ -37,6 +37,10 @@ jobs:
       id: get-ips
       run: |
         INSTANCE_IPS=$(terraform output -json app_server_instance_ips | jq -r '.[]')
+        if [ -z "$INSTANCE_IPS" ]; then
+          echo "Failed to retrieve instance IPs"
+          exit 1
+        fi
         echo "INSTANCE_IPS=$INSTANCE_IPS" >> $GITHUB_ENV
       working-directory: terraform
 

@@ -216,5 +216,8 @@ resource "aws_instance" "app_server_2" {
 }
 
 output "app_server_instance_ips" {
-  value = [aws_instance.app_server.public_ip, aws_instance.app_server_2.public_ip]
+  value = [
+    aws_instance.app_server.public_ip,
+    aws_instance.app_server_2.public_ip
+  ]
 }
