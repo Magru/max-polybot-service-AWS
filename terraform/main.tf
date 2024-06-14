@@ -215,10 +215,10 @@ resource "aws_instance" "app_server_2" {
   depends_on = [aws_security_group.combined_sg]
 }
 
-output "app_server_instance_ips" {
+output "app_server_instance_ip" {
   value = aws_instance.app_server.public_ip
 }
 
-output "app_server_2_instance_ips" {
+output "app_server_2_instance_ip" {
   value = aws_instance.app_server_2.public_ip
 }
