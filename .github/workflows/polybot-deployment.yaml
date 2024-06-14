@@ -43,9 +43,11 @@ jobs:
       id: get-ips
       run: |
         echo "Capturing instance IPs..."
-        INSTANCE_IPS=$(terraform output -json app_server_instance_ips | jq -r '.[]')
+        INSTANCE_IPS=$(terraform output -json app_server_instance_ips)
         echo "Captured INSTANCE_IPS: $INSTANCE_IPS"
-        echo "INSTANCE_IPS=$INSTANCE_IPS" >> $GITHUB_ENV
+        IP_LIST=$(echo $INSTANCE_IPS | jq -r '.[]')
+        echo "IP_LIST: $IP_LIST"
+        echo "INSTANCE_IPS=$IP_LIST" >> $GITHUB_ENV
       working-directory: terraform
 
     - name: Set up Docker Buildx
