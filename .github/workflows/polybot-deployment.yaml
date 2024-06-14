@@ -20,15 +20,18 @@ jobs:
 
     - name: Initialize Terraform
       run: terraform init
+      working-directory: terraform
 
     - name: Apply Terraform
       run: terraform apply -auto-approve
+      working-directory: terraform
 
     - name: Get instance IPs
       id: get-ips
       run: |
         INSTANCE_IPS=$(terraform output -json app_server_instance_ips | jq -r '.[]')
         echo "INSTANCE_IPS=$INSTANCE_IPS" >> $GITHUB_ENV
+      working-directory: terraform
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
@@ -51,6 +54,7 @@ jobs:
         IMAGE_TAG=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}
         docker build -t $IMAGE_TAG .
         docker push $IMAGE_TAG
+      working-directory: polybot
 
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
