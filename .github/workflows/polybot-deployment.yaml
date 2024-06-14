@@ -30,7 +30,7 @@ jobs:
       working-directory: terraform
 
     - name: Apply Terraform
-      run: terraform apply -auto-approve
+      run: terraform apply -var-file=main.tfvars -auto-approve
       working-directory: terraform
 
     - name: Get instance IPs
