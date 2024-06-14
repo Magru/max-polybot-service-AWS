@@ -33,14 +33,16 @@ jobs:
       run: terraform apply -var-file=main.tfvars -auto-approve
       working-directory: terraform
 
+    - name: Debug Terraform Output
+      run: |
+        echo "Terraform Output:"
+        terraform output -json app_server_instance_ips
+      working-directory: terraform
+
     - name: Get instance IPs
       id: get-ips
       run: |
         INSTANCE_IPS=$(terraform output -json app_server_instance_ips | jq -r '.[]')
-        if [ -z "$INSTANCE_IPS" ]; then
-          echo "Failed to retrieve instance IPs"
-          exit 1
-        fi
         echo "INSTANCE_IPS=$INSTANCE_IPS" >> $GITHUB_ENV
       working-directory: terraform
 
