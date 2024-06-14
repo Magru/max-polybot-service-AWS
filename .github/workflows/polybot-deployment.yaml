@@ -39,8 +39,8 @@ jobs:
         echo "Capturing instance IPs..."
         INSTANCE_IPS=$(terraform output -json app_server_instance_ips)
         echo "Captured INSTANCE_IPS: $INSTANCE_IPS"
-        echo $INSTANCE_IPS | jq -r '.[]' | tr '\n' ' ' > instance_ips.txt
-        cat instance_ips.txt
+        echo $INSTANCE_IPS | jq -r '.[]' | tr '\n' ' ' > terraform/instance_ips.txt
+        cat terraform/instance_ips.txt
       working-directory: terraform
 
     - name: Set instance IPs as environment variable
@@ -87,4 +87,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << EOF
           cd /path/to/your/project
           export $(grep -v '^#' polybot/.env | xargs)
-          docker-comp
+          docker-compose pull polybot
+          docker-compose up -d
+          EOF
+        done
