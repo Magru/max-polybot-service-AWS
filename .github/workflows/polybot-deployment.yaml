@@ -22,12 +22,12 @@ jobs:
       run: terraform init
 
     - name: Apply Terraform
-      run: terraform apply -lockfile=.terraform.lock.hcl -auto-approve
+      run: terraform apply -auto-approve
 
     - name: Get instance IPs
       id: get-ips
       run: |
-        INSTANCE_IPS=$(terraform output -json | jq -r '.app_server_instance_ips.value[]')
+        INSTANCE_IPS=$(terraform output -json app_server_instance_ips | jq -r '.[]')
         echo "INSTANCE_IPS=$INSTANCE_IPS" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
@@ -42,19 +42,15 @@ jobs:
     - name: Read .env file
       id: read-env
       run: |
-        export $(grep -v '^#' .env | xargs)
-        echo "POLYBOT_IMG_NAME=${POLYBOT_IMG_NAME}" >> $GITHUB_ENV
-
-    - name: Extract version from image name
-      id: extract-version
-      run: |
-        VERSION=$(echo "${{ env.POLYBOT_IMG_NAME }}" | grep -oP '\d+\.\d+\.\d+')
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        export $(grep -v '^#' polybot/.env | xargs)
+        echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}" >> $GITHUB_ENV
+        echo "POLYBOT_IMAGE_VERSION=${POLYBOT_IMAGE_VERSION}" >> $GITHUB_ENV
 
     - name: Build and push Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/polybot:${{ env.VERSION }} .
-        docker push ${{ secrets.DOCKER_USERNAME }}/polybot:${{ env.VERSION }}
+        IMAGE_TAG=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}
+        docker build -t $IMAGE_TAG .
+        docker push $IMAGE_TAG
 
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
@@ -65,8 +61,8 @@ jobs:
       run: |
         for IP in ${{ env.INSTANCE_IPS }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << 'EOF'
-          cd /home/ubuntu/polybot
-          export $(grep -v '^#' .env | xargs)
+          cd /path/to/your/project
+          export $(grep -v '^#' polybot/.env | xargs)
           docker-compose pull polybot
           docker-compose up -d
           EOF
