@@ -1,0 +1,10 @@
+services:
+  polybot:
+    image: ${POLYBOT_IMG_NAME}
+    container_name: polybot
+    env_file:
+      - .env
+    ports:
+      - "8443:8443"
+    tty: true
+    stdin_open: true

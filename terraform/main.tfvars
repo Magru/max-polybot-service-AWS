@@ -1,0 +1,6 @@
+region="eu-west-2"
+app_server_instance_type="t2.micro"
+app_server_instance_aim="ami-053a617c6207ecc7b"
+app_server_instance_kp_name="max-london-kp"
+app_server_instance_build_version="0.0.1"
+project_name_prefix="max-aws-project"

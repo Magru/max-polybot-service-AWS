@@ -1,15 +1,15 @@
 import flask
+from loguru import logger
 from flask import request
-import os
 from TelegramBot import TelegramBot
+from utils import Utils
 
 app = flask.Flask(__name__)
 
+TELEGRAM_TOKEN = Utils.get_secret('MX_TELEGRAM_BOT_TOKEN')
+TELEGRAM_APP_URL = 'magru.int-devops.click'
 
-# TODO load TELEGRAM_TOKEN value from Secret Manager
-TELEGRAM_TOKEN = ''
-# TELEGRAM_APP_URL = os.environ['TELEGRAM_APP_URL']
-TELEGRAM_APP_URL = 'primary-stable-lioness.ngrok-free.app'
+logger.info(TELEGRAM_TOKEN)
 
 
 @app.route('/', methods=['GET'])
