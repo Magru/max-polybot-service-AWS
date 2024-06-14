@@ -50,6 +50,15 @@ jobs:
         echo "IP_LIST: $IP_LIST"
         echo "INSTANCE_IPS=$IP_LIST" >> $GITHUB_ENV
 
+    - name: Read .env file
+      id: read-env
+      run: |
+        export $(grep -v '^#' polybot/.env | xargs)
+        echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}"
+        echo "POLYBOT_IMAGE_VERSION=${POLYBOT_IMAGE_VERSION}"
+        echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}" >> $GITHUB_ENV
+        echo "POLYBOT_IMAGE_VERSION=${POLYBOT_IMAGE_VERSION}" >> $GITHUB_ENV
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -59,16 +68,10 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Read .env file
-      id: read-env
-      run: |
-        export $(grep -v '^#' polybot/.env | xargs)
-        echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}" >> $GITHUB_ENV
-        echo "POLYBOT_IMAGE_VERSION=${POLYBOT_IMAGE_VERSION}" >> $GITHUB_ENV
-
     - name: Build and push Docker image
       run: |
         IMAGE_TAG=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}
+        echo "Building and pushing Docker image with tag: $IMAGE_TAG"
         docker build -t $IMAGE_TAG .
         docker push $IMAGE_TAG
       working-directory: polybot
