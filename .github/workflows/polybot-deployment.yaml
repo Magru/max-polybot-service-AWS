@@ -33,22 +33,21 @@ jobs:
       run: terraform apply -var-file=main.tfvars -auto-approve
       working-directory: terraform
 
-    - name: Debug Terraform Output
-      run: |
-        echo "Terraform Output:"
-        terraform output -json app_server_instance_ips
-      working-directory: terraform
-
-    - name: Get instance IPs
-      id: get-ips
+    - name: Capture Terraform Output
+      id: capture-output
       run: |
         echo "Capturing instance IPs..."
         INSTANCE_IPS=$(terraform output -json app_server_instance_ips)
         echo "Captured INSTANCE_IPS: $INSTANCE_IPS"
-        IP_LIST=$(echo $INSTANCE_IPS | jq -r '.[]')
+        echo $INSTANCE_IPS | jq -r '.[]' > instance_ips.txt
+      working-directory: terraform
+
+    - name: Set instance IPs as environment variable
+      id: set-env
+      run: |
+        IP_LIST=$(cat terraform/instance_ips.txt | tr '\n' ' ')
         echo "IP_LIST: $IP_LIST"
         echo "INSTANCE_IPS=$IP_LIST" >> $GITHUB_ENV
-      working-directory: terraform
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
