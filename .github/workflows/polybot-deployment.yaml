@@ -39,10 +39,11 @@ jobs:
         echo "Capturing instance IPs..."
         APP_SERVER_IP=$(terraform output -raw app_server_instance_ip)
         APP_SERVER_2_IP=$(terraform output -raw app_server_2_instance_ip)
-        echo "Captured APP_SERVER_IP: ${APP_SERVER_IP%%::*}"
-        echo "Captured APP_SERVER_2_IP: ${APP_SERVER_2_IP%%::*}"
-        echo "APP_SERVER_IP=${APP_SERVER_IP%%::*}" >> $GITHUB_ENV
-        echo "APP_SERVER_2_IP=${APP_SERVER_2_IP%%::*}" >> $GITHUB_ENV
+        APP_SERVER_IP_PROCESSED=${APP_SERVER_IP%%::*}
+        APP_SERVER_2_IP_PROCESSED=${APP_SERVER_2_IP%%::*}
+        
+        echo "APP_SERVER_IP=${APP_SERVER_IP_PROCESSED}" >> $GITHUB_ENV
+        echo "APP_SERVER_2_IP=${APP_SERVER_2_IP_PROCESSED}" >> $GITHUB_ENV
       working-directory: terraform
 
     - name: Read .env file
