@@ -81,9 +81,10 @@ jobs:
       run: |
         echo "Deploying to instances: ${{ env.APP_SERVER_IP }} and ${{ env.APP_SERVER_2_IP }}"
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP
-          cd /home/ubuntu/polybot
-          export \$(grep -v '^#' polybot/.env | xargs)
-          docker-compose pull polybot
-          docker-compose up -d
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
+            cd /home/ubuntu/polybot
+            export \$(grep -v '^#' polybot/.env | xargs)
+            docker-compose pull polybot
+            docker-compose up -d
+        EOF
         done
