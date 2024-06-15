@@ -85,7 +85,7 @@ jobs:
             cd /home/ubuntu/polybot
             export \$(grep -v '^#' .env | xargs)
             POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}
-            docker-compose pull polybot
-            docker-compose up -d
+            sudo docker-compose pull polybot
+            sudo docker-compose up -d
         EOF
         done
