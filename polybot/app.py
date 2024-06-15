@@ -14,6 +14,7 @@ logger.info(TELEGRAM_TOKEN)
 
 @app.route('/', methods=['GET'])
 def index():
+    logger.info('Hello i am from 2.0.6')
     return 'Ok'
 
 
