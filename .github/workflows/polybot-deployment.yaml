@@ -83,7 +83,8 @@ jobs:
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
-            export \$(grep -v '^#' polybot/.env | xargs)
+            export \$(grep -v '^#' .env | xargs)
+            POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}
             docker-compose pull polybot
             docker-compose up -d
         EOF
