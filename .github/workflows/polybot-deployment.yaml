@@ -42,8 +42,8 @@ jobs:
         APP_SERVER_IP_PROCESSED=${APP_SERVER_IP%%::*}
         APP_SERVER_2_IP_PROCESSED=${APP_SERVER_2_IP%%::*}
         
-        echo "APP_SERVER_IP=35.178.58.224" >> $GITHUB_ENV
-        echo "APP_SERVER_2_IP=18.135.46.255" >> $GITHUB_ENV
+        echo "APP_SERVER_IP=3.10.215.239" >> $GITHUB_ENV
+        echo "APP_SERVER_2_IP=3.8.40.249" >> $GITHUB_ENV
       working-directory: terraform
 
     - name: Read .env file
