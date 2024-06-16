@@ -47,7 +47,7 @@ EOL
 
 # Write the .env file
 cat <<EOL > /home/ubuntu/polybot/.env
-POLYBOT_IMG_NAME=magrufol/polybot:2.0.6
+POLYBOT_IMG_NAME=magrufol/polybot:2.0.7
 EOL
 
 # Change directory to where docker-compose.yaml is located and run docker-compose up
