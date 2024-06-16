@@ -83,7 +83,7 @@ jobs:
     - name: Deploy to AWS EC2
       run: |
         echo "Deploying to instances: ${{ env.APP_SERVER_IP }} and ${{ env.APP_SERVER_2_IP }}"
-        ENV_VARS=$(env | grep -v 'GITHUB_')
+        sudo ENV_VARS=$(env | grep -v 'GITHUB_')
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
