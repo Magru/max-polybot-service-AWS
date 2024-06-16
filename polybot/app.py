@@ -9,12 +9,9 @@ app = flask.Flask(__name__)
 TELEGRAM_TOKEN = Utils.get_secret('MX_TELEGRAM_BOT_TOKEN')
 TELEGRAM_APP_URL = 'magru.int-devops.click'
 
-logger.info(TELEGRAM_TOKEN)
-
 
 @app.route('/', methods=['GET'])
 def index():
-    logger.info('Hello i am from 2.0.6')
     return 'Ok'
 
 

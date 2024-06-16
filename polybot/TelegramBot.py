@@ -87,11 +87,15 @@ class TelegramBot:
 
         if self.is_current_msg_photo(msg):
             image = self.download_user_photo(msg)
+            caption = msg.get('caption')
             try:
-                img_proc = ImageProcessingBot(msg, image)
-                response_image = img_proc.get_filtered_image_path()
-                self.send_photo(chat_id, response_image)
-                img_proc.clean_images()
+                if caption and caption.lower() == 'predict':
+                    object_detection = ObjectDetectionHandler(image)
+                else:
+                    img_proc = ImageProcessingBot(msg, image)
+                    response_image = img_proc.get_filtered_image_path()
+                    self.send_photo(chat_id, response_image)
+                    img_proc.clean_images()
             except Exception as e:
                 self.send_text(chat_id, self.text_response_handler(str(e), chat_id))
 
