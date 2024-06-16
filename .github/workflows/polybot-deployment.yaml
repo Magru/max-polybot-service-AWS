@@ -55,7 +55,7 @@ jobs:
         echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}" >> $GITHUB_ENV
         echo "POLYBOT_IMAGE_VERSION=${POLYBOT_IMAGE_VERSION}" >> $GITHUB_ENV
         env | grep -v 'GITHUB_' | while read -r line; do
-          echo "$line" >> $GITHUB_ENV
+          sudo echo "$line" >> $GITHUB_ENV
         done
 
     - name: Set up Docker Build
@@ -87,7 +87,7 @@ jobs:
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
-            echo "$ENV_VARS" > .env
+            sudo echo "$ENV_VARS" > .env
             sudo sed -i 's|POLYBOT_IMG_NAME=.*|POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}|' .env
             sudo docker-compose up -d
         EOF
