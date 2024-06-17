@@ -43,8 +43,8 @@ jobs:
         APP_SERVER_IP_PROCESSED=${APP_SERVER_IP%%::*}
         APP_SERVER_2_IP_PROCESSED=${APP_SERVER_2_IP%%::*}
         
-        echo "APP_SERVER_IP=3.8.40.249" >> $GITHUB_ENV
-        echo "APP_SERVER_2_IP=3.10.215.239" >> $GITHUB_ENV
+        echo "APP_SERVER_IP=18.132.13.241" >> $GITHUB_ENV
+        echo "APP_SERVER_2_IP=13.41.76.117" >> $GITHUB_ENV
       working-directory: terraform
 
     - name: Read .env file
@@ -86,8 +86,10 @@ jobs:
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
-            sudo sed -i 's|POLYBOT_IMG_NAME=.*|POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:${{ env.POLYBOT_IMAGE_VERSION }}|' .env
-            sudo sed -i 's|IMAGES_BUCKET_NAME=.*|IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}|' .env
+            POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
+            POLYBOT_IMAGE_VERSION=${{ env.POLYBOT_IMAGE_VERSION }}
+            IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
+            EOT
             sudo docker-compose up -d
         EOF
         done
