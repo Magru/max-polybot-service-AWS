@@ -84,7 +84,7 @@ jobs:
       run: |
           echo "Copying deployment script to instances: ${{ env.APP_SERVER_IP }} and ${{ env.APP_SERVER_2_IP }}"
           for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
-            scp -o StrictHostKeyChecking=no polybot/polybot-deploy.sh ${{ secrets.EC2_USER }}@$IP:/home/ubuntu/polybot/polybot-deploy.sh
+            sudo scp -o StrictHostKeyChecking=no polybot/polybot-deploy.sh ${{ secrets.EC2_USER }}@$IP:/home/ubuntu/polybot/polybot-deploy.sh
           done
 
     - name: Deploy to AWS EC2
