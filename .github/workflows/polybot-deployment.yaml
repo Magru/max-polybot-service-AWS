@@ -79,20 +79,15 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Copy deployment script to AWS EC2
-      run: |
-          echo "Copying deployment script to instances: ${{ env.APP_SERVER_IP }} and ${{ env.APP_SERVER_2_IP }}"
-          for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
-            sudo scp -o StrictHostKeyChecking=no polybot/polybot-deploy.sh ${{ secrets.EC2_USER }}@$IP:/home/ubuntu/polybot/polybot-deploy.sh
-          done
-
     - name: Deploy to AWS EC2
       run: |
         echo "Deploying to instances: ${{ env.APP_SERVER_IP }} and ${{ env.APP_SERVER_2_IP }}"
+        sudo ENV_VARS=$(env | grep -v 'GITHUB_')
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
-            chmod +x polybot-deploy.sh
-            ./polybot-deploy.sh
+            sudo echo "$ENV_VARS" > .env
+            sudo sed -i 's|POLYBOT_IMG_NAME=.*|POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:333|' .env
+            sudo docker-compose up -d
         EOF
         done
