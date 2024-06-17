@@ -86,6 +86,7 @@ jobs:
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
+            cat <<EOT > .env
             POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
             POLYBOT_IMAGE_VERSION=${{ env.POLYBOT_IMAGE_VERSION }}
             IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
