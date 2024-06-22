@@ -92,6 +92,7 @@ class TelegramBot:
                 if caption and caption.lower() == 'predict':
                     object_detection = ObjectDetectionHandler(image)
                     res = object_detection.upload_image_file_to_s3()
+                    logger.info(res)
 
                     if res["success"]:
                         self.send_text(chat_id,

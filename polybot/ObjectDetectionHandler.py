@@ -11,18 +11,17 @@ class ObjectDetectionHandler:
 
     def __init__(self, image):
         self.image_path = image
-        self.s3_client = boto3.client('s3')
-        self.sqs_client = boto3.client('sqs')
-        self.s3_bucket_name = os.environ['IMAGES_BUCKET_NAME']
-        self.sqs_queue_url = Utils.get_secret('MAX_SQS_ENDPOINT')
 
     def upload_image_file_to_s3(self):
+        s3_bucket_name = os.environ['BUCKET_NAME']
+        s3_client = boto3.client('s3')
+
         unique_id = str(uuid.uuid4())
         name, extension = os.path.splitext(self.image_path)
         object_name = f"{unique_id}{extension}"
 
         try:
-            self.s3_client.upload_file(self.image_path, self.s3_bucket_name, object_name)
+            s3_client.upload_file(self.image_path, s3_bucket_name, object_name)
             return {
                 "success": True,
                 "message": "Image uploaded successfully! 🎉",
@@ -47,14 +46,18 @@ class ObjectDetectionHandler:
                            "minutes."
             }
 
-    def send_message_to_sqs(self, chat_id, image_id):
+    @staticmethod
+    def send_message_to_sqs(chat_id, image_id):
+        sqs_client = boto3.client('sqs')
+        sqs_queue_url = Utils.get_secret('MAX_SQS_ENDPOINT')
+
         try:
             message_body = json.dumps({
                 'chat_id': chat_id,
                 'image_id': image_id
             })
-            response = self.sqs_client.send_message(
-                QueueUrl=self.sqs_queue_url,
+            response = sqs_client.send_message(
+                QueueUrl=sqs_queue_url,
                 MessageBody=message_body,
                 MessageGroupId='object_detection',
                 MessageDeduplicationId=str(uuid.uuid4())
