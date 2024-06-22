@@ -17,7 +17,7 @@ class ObjectDetectionHandler:
 
         unique_id = str(uuid.uuid4())
         name, extension = os.path.splitext(self.image_path)
-        object_name = f"{name}_{unique_id}{extension}"
+        object_name = f"{unique_id}{extension}"
 
         try:
             s3_client.upload_file(self.image_path, s3_bucket_name, object_name)
