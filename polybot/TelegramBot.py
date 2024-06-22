@@ -90,17 +90,17 @@ class TelegramBot:
             caption = msg.get('caption')
             try:
                 if caption and caption.lower() == 'predict':
-                    self.send_text(chat_id, """🔎 Image Analysis Initiated! 🖼️
-
-                    🤖 Our AI is now examining your image...
-                    ✨ Detecting objects and patterns
-                    🧠 Processing with advanced algorithms
-
-                    Please stand by for exciting results! 🚀""")
                     object_detection = ObjectDetectionHandler(image)
                     res = object_detection.upload_image_file_to_s3()
 
-                    self.send_text(chat_id, f'Upload res: {res}')
+                    if res["success"]:
+                        self.send_text(chat_id,
+                                       f"{res['message']}\n\nYour image is now being processed. Sit tight, amazing "
+                                       f"results are on the way! 🌟")
+                        object_detection.send_message_to_sqs(chat_id, res["object_name"])
+
+                    else:
+                        self.send_text(chat_id, res["message"])
 
                 else:
                     img_proc = ImageProcessingBot(msg, image)
@@ -108,7 +108,12 @@ class TelegramBot:
                     self.send_photo(chat_id, response_image)
                     img_proc.clean_images()
             except Exception as e:
-                self.send_text(chat_id, f'Handle image error: {str(e)}')
+                error_message = (f"Whoops! 😳 Looks like we hit a snag while handling your image. Our team of expert "
+                                 f"troubleshooters is on the case! In the meantime, why not try uploading a different "
+                                 f"image? If the problem continues, it might be a good time for a quick game of 'spot "
+                                 f"the cloud shapes' while we sort things out! 🌤️")
+                logger.error(f'Handle image error: {str(e)}')
+                self.send_text(chat_id, error_message)
 
         else:
             self.send_text(chat_id, self.text_response_handler(msg['text'], chat_id))
