@@ -88,8 +88,11 @@ class TelegramBot:
         if self.is_current_msg_photo(msg):
             image = self.download_user_photo(msg)
             caption = msg.get('caption')
+            logger.info(caption)
+            self.send_text(chat_id, f'Caption id ${caption}')
             try:
                 if caption and caption.lower() == 'predict':
+                    logger.info('inside if')
                     object_detection = ObjectDetectionHandler(image)
                 else:
                     img_proc = ImageProcessingBot(msg, image)
