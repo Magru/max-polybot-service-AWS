@@ -83,9 +83,16 @@ jobs:
       run: |
         echo "Deploying to instances: ${{ env.APP_SERVER_IP }} and ${{ env.APP_SERVER_2_IP }}"
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << EOF
             cd /home/ubuntu/polybot
-            sudo sed -i 's|POLYBOT_IMG_NAME=.*|POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:333|' .env
-            docker-compose up -d
+            echo "Recreating .env file"
+            cat << EOT > .env
+        POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
+        IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
+        # Add any other variables you want to include in the .env file
+        EOT
+            echo "Updated .env file:"
+            cat .env
+            sudo docker-compose up -d
         EOF
         done
