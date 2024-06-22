@@ -89,7 +89,6 @@ jobs:
             sudo tee .env > /dev/null << EOT
         POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
         IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
-        # Add any other variables you want to include in the .env file
         EOT
             echo "Updated .env file:"
             sudo cat .env
