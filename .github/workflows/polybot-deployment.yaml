@@ -86,13 +86,17 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << EOF
             cd /home/ubuntu/polybot
             echo "Recreating .env file"
-            sudo cat << EOT > .env
+            sudo tee .env > /dev/null << EOT
         POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
         IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
         # Add any other variables you want to include in the .env file
         EOT
             echo "Updated .env file:"
-            cat .env
+            sudo cat .env
+            echo "Pulling latest Docker image"
+            sudo docker pull ${{ env.POLYBOT_IMAGE_NAME }}
+            echo "Starting Docker Compose"
             sudo docker-compose up -d
+            echo "Deployment completed"
         EOF
         done
