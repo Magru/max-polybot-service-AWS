@@ -168,9 +168,9 @@ resource "aws_iam_role_policy" "ec2_role_policy" {
         Sid    = "SQSPermissions"
         Effect = "Allow"
         Action = [
-          "SQS:*"
+          "sqs:SendMessage",
         ]
-        Resource = "arn:aws:sqs:eu-west-2:019273956931:max-aws-project-sqs"
+        Resource = "arn:aws:sqs:eu-west-2:019273956931:max-aws-project-sqs.fifo"
       }
     ]
   })
