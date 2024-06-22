@@ -87,7 +87,7 @@ jobs:
             cd /home/ubuntu/polybot
             echo "Recreating .env file"
             sudo tee .env > /dev/null << EOT
-        POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMG_NAME }}
+        POLYBOT_IMG_NAME=${{ env.POLYBOT_IMG_NAME }}
         IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
         EOT
             echo "Updated .env file:"
