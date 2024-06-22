@@ -86,8 +86,8 @@ jobs:
         for IP in ${{ env.APP_SERVER_IP }} ${{ env.APP_SERVER_2_IP }}; do
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP <<EOF
             cd /home/ubuntu/polybot
-            echo "$ENV_VARS" > .env
-            sed -i 's|POLYBOT_IMG_NAME=.*|POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:333|' .env
+            sudo echo "$ENV_VARS" > .env
+            sudo sed -i 's|POLYBOT_IMG_NAME=.*|POLYBOT_IMG_NAME=${{ env.POLYBOT_IMAGE_NAME }}:333|' .env
             docker-compose up -d
         EOF
         done
