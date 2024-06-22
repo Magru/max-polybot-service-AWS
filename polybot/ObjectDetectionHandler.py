@@ -9,16 +9,14 @@ class ObjectDetectionHandler:
 
     def __init__(self, image):
         self.image_path = image
-        logger.info('Start predict')
 
-    def upload_image_file_to_s3(self, object_name, add_unique=False):
+    def upload_image_file_to_s3(self):
         s3_bucket_name = os.environ['BUCKET_NAME']
         s3_client = boto3.client('s3')
 
-        if add_unique:
-            unique_id = str(uuid.uuid4())
-            name, extension = os.path.splitext(object_name)
-            object_name = f"{name}_{unique_id}{extension}"
+        unique_id = str(uuid.uuid4())
+        name, extension = os.path.splitext(self.image_path)
+        object_name = f"{name}_{unique_id}{extension}"
 
         try:
             s3_client.upload_file(self.image_path, s3_bucket_name, object_name)

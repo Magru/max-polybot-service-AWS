@@ -88,12 +88,20 @@ class TelegramBot:
         if self.is_current_msg_photo(msg):
             image = self.download_user_photo(msg)
             caption = msg.get('caption')
-            logger.info(caption)
-            self.send_text(chat_id, f'Caption id ${caption}')
             try:
                 if caption and caption.lower() == 'predict':
-                    logger.info('inside if')
+                    self.send_text(chat_id, """🔎 Image Analysis Initiated! 🖼️
+
+                    🤖 Our AI is now examining your image...
+                    ✨ Detecting objects and patterns
+                    🧠 Processing with advanced algorithms
+
+                    Please stand by for exciting results! 🚀""")
                     object_detection = ObjectDetectionHandler(image)
+                    res = object_detection.upload_image_file_to_s3()
+
+                    self.send_text(chat_id, f'Upload res: {res}')
+
                 else:
                     img_proc = ImageProcessingBot(msg, image)
                     response_image = img_proc.get_filtered_image_path()
