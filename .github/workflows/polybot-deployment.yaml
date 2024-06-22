@@ -53,9 +53,9 @@ jobs:
       id: read-env
       run: |
         export $(grep -v '^#' polybot/.env | xargs)
-        echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}"
+        echo "POLYBOT_IMG_NAME=${POLYBOT_IMG_NAME}"
         echo "IMAGES_BUCKET_NAME=${IMAGES_BUCKET_NAME}"
-        echo "POLYBOT_IMAGE_NAME=${POLYBOT_IMAGE_NAME}" >> $GITHUB_ENV
+        echo "POLYBOT_IMG_NAME=${POLYBOT_IMG_NAME}" >> $GITHUB_ENV
         echo "IMAGES_BUCKET_NAME=${IMAGES_BUCKET_NAME}" >> $GITHUB_ENV
 
     - name: Set up Docker Build
@@ -70,8 +70,8 @@ jobs:
     - name: Build and push Docker image
       run: |
         echo "Building and pushing Docker image with tag: $IMAGE_TAG"
-        docker build -t ${{ env.POLYBOT_IMAGE_NAME }} .
-        docker push ${{ env.POLYBOT_IMAGE_NAME }}
+        docker build -t ${{ env.POLYBOT_IMG_NAME }} .
+        docker push ${{ env.POLYBOT_IMG_NAME }}
       working-directory: polybot
 
     - name: Set up SSH
@@ -87,13 +87,13 @@ jobs:
             cd /home/ubuntu/polybot
             echo "Recreating .env file"
             sudo tee .env > /dev/null << EOT
-        POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
+        POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMG_NAME }}
         IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
         EOT
             echo "Updated .env file:"
             sudo cat .env
             echo "Pulling latest Docker image"
-            sudo docker pull ${{ env.POLYBOT_IMAGE_NAME }}
+            sudo docker pull ${{ env.POLYBOT_IMG_NAME }}
             echo "Starting Docker Compose"
             sudo docker-compose up -d
             echo "Deployment completed"
