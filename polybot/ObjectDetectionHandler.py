@@ -56,7 +56,8 @@ class ObjectDetectionHandler:
 
     def send_message_to_sqs(self, image_id):
         sqs_client = boto3.client('sqs')
-        sqs_queue_url = Utils.get_secret('MX_SQS_ENDPOINT')
+        sqs_queue_url = 'https://sqs.eu-west-2.amazonaws.com/019273956931/max-aws-project-sqs.fifo'
+        logger.info(f'SQS: {sqs_queue_url}')
 
         try:
             message_body = json.dumps({
