@@ -9,6 +9,7 @@ class ObjectDetectionHandler:
 
     def __init__(self, image):
         self.image_path = image
+        logger.info('Start predict')
 
     def upload_image_file_to_s3(self, object_name, add_unique=False):
         s3_bucket_name = os.environ['BUCKET_NAME']
