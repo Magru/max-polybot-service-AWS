@@ -15,10 +15,33 @@ class ObjectDetectionHandler:
         self.chat_id = chat_id
 
     def run(self):
-        upload_res = self.upload_image_file_to_s3()
-        logger.info(upload_res)
-        que_res = self.send_message_to_sqs(upload_res["object_name"])
-        logger.info(que_res)
+        try:
+            upload_res = self.upload_image_file_to_s3()
+            logger.info(upload_res)
+
+            if not upload_res["success"]:
+                return upload_res
+
+            que_res = self.send_message_to_sqs(upload_res["object_name"])
+            logger.info(que_res)
+
+            if not que_res:
+                return {
+                    "success": False,
+                    "message": "Failed to send message to SQS queue. Please try again later."
+                }
+
+            return {
+                "success": True,
+                "message": "Image uploaded and processing job queued successfully!"
+            }
+
+        except Exception as e:
+            logger.error(f"Unexpected error in run method: {e}")
+            return {
+                "success": False,
+                "message": "An unexpected error occurred. Our team has been notified and is working on it."
+            }
 
     def upload_image_file_to_s3(self):
         s3_bucket_name = os.environ['IMAGES_BUCKET_NAME']
@@ -56,7 +79,7 @@ class ObjectDetectionHandler:
 
     def send_message_to_sqs(self, image_id):
         sqs_client = boto3.client('sqs', region_name='eu-west-2')
-        sqs_queue_url = 'https://sqs.eu-west-2.amazonaws.com/019273956931/max-aws-project-sqs.fifo'
+        sqs_queue_url = Utils.get_secret('MX_SQS_ENDPOINT')
         logger.info(f'SQS: {sqs_queue_url}')
 
         try:

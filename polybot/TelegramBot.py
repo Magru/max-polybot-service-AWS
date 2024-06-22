@@ -91,7 +91,25 @@ class TelegramBot:
             try:
                 if caption and caption.lower() == 'predict':
                     object_detection = ObjectDetectionHandler(image, chat_id)
-                    object_detection.run()
+                    run_res = object_detection.run()
+
+                    if run_res['success']:
+                        self.send_text(chat_id, """🔎 Image Analysis Initiated! 🖼️
+
+                    🤖 Our AI is now examining your image...
+                    ✨ Detecting objects and patterns
+                    🧠 Processing with advanced algorithms
+
+                    Please stand by for exciting results! 🚀""")
+                    else:
+                        error_message = f"""Oops! 😅 It seems we've encountered a little hiccup:
+
+                    {run_res['message']}
+
+                    Don't worry, our digital elves are already on the case! 🧝‍♂️🔧 Feel free to try again or upload 
+                    a different image. If the problem persists, maybe it's time for a quick coffee break? ☕️"""
+                        self.send_text(chat_id, error_message)
+
                 else:
                     img_proc = ImageProcessingBot(msg, image)
                     response_image = img_proc.get_filtered_image_path()
