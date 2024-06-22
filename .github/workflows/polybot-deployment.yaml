@@ -86,7 +86,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@$IP << EOF
             cd /home/ubuntu/polybot
             echo "Recreating .env file"
-            cat << EOT > .env
+            sudo cat << EOT > .env
         POLYBOT_IMAGE_NAME=${{ env.POLYBOT_IMAGE_NAME }}
         IMAGES_BUCKET_NAME=${{ env.IMAGES_BUCKET_NAME }}
         # Add any other variables you want to include in the .env file
