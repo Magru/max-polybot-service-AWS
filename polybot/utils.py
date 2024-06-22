@@ -38,8 +38,7 @@ class Utils:
         return f"{name}_{unique_id}{extension}"
 
     @staticmethod
-    def get_secret(name, secret_name="max-telegram", region_name="eu-west-2"):
-        """Retrieves a secret value by name from AWS Secrets Manager."""
+    def get_secret(name, secret_name="max-aws-project", region_name="eu-west-2"):
         client = Utils._create_secrets_manager_client(region_name)
 
         secret_string = Utils._get_secret_string(client, secret_name)

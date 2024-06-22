@@ -9,8 +9,16 @@ from utils import Utils
 
 class ObjectDetectionHandler:
 
-    def __init__(self, image):
+    def __init__(self, image, chat_id):
         self.image_path = image
+        self.uploaded_object = None
+        self.chat_id = chat_id
+
+    def run(self):
+        upload_res = self.upload_image_file_to_s3()
+        logger.info(upload_res)
+        que_res = self.send_message_to_sqs(upload_res["object_name"])
+        logger.info(que_res)
 
     def upload_image_file_to_s3(self):
         s3_bucket_name = os.environ['IMAGES_BUCKET_NAME']
@@ -46,14 +54,13 @@ class ObjectDetectionHandler:
                            "minutes."
             }
 
-    @staticmethod
-    def send_message_to_sqs(chat_id, image_id):
+    def send_message_to_sqs(self, image_id):
         sqs_client = boto3.client('sqs')
-        sqs_queue_url = Utils.get_secret('MAX_SQS_ENDPOINT')
+        sqs_queue_url = Utils.get_secret('MX_SQS_ENDPOINT')
 
         try:
             message_body = json.dumps({
-                'chat_id': chat_id,
+                'chat_id': self.chat_id,
                 'image_id': image_id
             })
             response = sqs_client.send_message(

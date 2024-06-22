@@ -90,19 +90,8 @@ class TelegramBot:
             caption = msg.get('caption')
             try:
                 if caption and caption.lower() == 'predict':
-                    object_detection = ObjectDetectionHandler(image)
-                    res = object_detection.upload_image_file_to_s3()
-                    logger.info(res)
-
-                    if res["success"]:
-                        self.send_text(chat_id,
-                                       f"{res['message']}\n\nYour image is now being processed. Sit tight, amazing "
-                                       f"results are on the way! 🌟")
-                        object_detection.send_message_to_sqs(chat_id, res["object_name"])
-
-                    else:
-                        self.send_text(chat_id, res["message"])
-
+                    object_detection = ObjectDetectionHandler(image, chat_id)
+                    object_detection.run()
                 else:
                     img_proc = ImageProcessingBot(msg, image)
                     response_image = img_proc.get_filtered_image_path()
