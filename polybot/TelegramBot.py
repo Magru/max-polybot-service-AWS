@@ -82,7 +82,7 @@ class TelegramBot:
 
     def handle_message(self, msg):
         """Bot Main message handler"""
-        # logger.info(f'Incoming message: {msg}')
+        logger.info(f'Incoming message: {msg}')
         chat_id = msg['chat']['id']
 
         if self.is_current_msg_photo(msg):
