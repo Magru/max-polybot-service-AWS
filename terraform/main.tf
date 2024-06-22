@@ -144,7 +144,7 @@ resource "aws_iam_role" "ec2_role" {
 }
 
 resource "aws_iam_role_policy" "ec2_role_policy" {
-  name = "${var.project_name_prefix}-ec2_full_s3_secrets_policy"
+  name = "${var.project_name_prefix}-ec2_full_s3_secrets_sqs_policy"
   role = aws_iam_role.ec2_role.id
   policy = jsonencode({
     Version = "2012-10-17"
@@ -163,6 +163,14 @@ resource "aws_iam_role_policy" "ec2_role_policy" {
         ]
         Effect   = "Allow"
         Resource = "*"
+      },
+      {
+        Sid    = "SQSPermissions"
+        Effect = "Allow"
+        Action = [
+          "SQS:*"
+        ]
+        Resource = "arn:aws:sqs:eu-west-2:019273956931:max-aws-project-sqs"
       }
     ]
   })
