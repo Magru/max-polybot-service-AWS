@@ -108,7 +108,7 @@ class TelegramBot:
                     self.send_photo(chat_id, response_image)
                     img_proc.clean_images()
             except Exception as e:
-                self.send_text(chat_id, self.text_response_handler(str(e), chat_id))
+                self.send_text(chat_id, f'Handle image error: {str(e)}')
 
         else:
             self.send_text(chat_id, self.text_response_handler(msg['text'], chat_id))

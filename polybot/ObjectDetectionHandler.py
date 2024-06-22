@@ -11,7 +11,8 @@ class ObjectDetectionHandler:
         self.image_path = image
 
     def upload_image_file_to_s3(self):
-        s3_bucket_name = os.environ['BUCKET_NAME']
+        s3_bucket_name = os.environ['IMAGES_BUCKET_NAME']
+        logger.info(f'Bucket: {s3_bucket_name}')
         s3_client = boto3.client('s3')
 
         unique_id = str(uuid.uuid4())
