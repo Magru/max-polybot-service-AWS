@@ -1,4 +1,5 @@
 import boto3
+from loguru import logger
 from botocore.exceptions import ClientError
 
 
@@ -17,6 +18,7 @@ class ResultsHandler:
                 }
             )
             item = response.get('Item')
+            logger.info(item)
 
             if item:
                 self.result = item  # Store the result

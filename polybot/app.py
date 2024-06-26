@@ -27,7 +27,7 @@ def webhook():
 def results():
     prediction_id = request.args.get('predictionId')
     result = ResultsHandler(prediction_id)
-    logger.info(result)
+    logger.info(result.result)
 
     # chat_id = ...
     # text_results = ...
