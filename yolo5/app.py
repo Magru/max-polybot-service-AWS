@@ -9,6 +9,7 @@ from loguru import logger
 import os
 import boto3
 from AWS import AWS
+import requests
 
 images_bucket = os.environ['BUCKET_NAME']
 queue_name = os.environ['SQS_QUEUE_NAME']
@@ -28,6 +29,17 @@ def convert_to_dynamodb_format(obj):
         return [convert_to_dynamodb_format(v) for v in obj]
     else:
         return obj
+
+
+def send_post_request(prediction_id):
+    url = "https://magru.int-devops.click"
+    params = {"predictionId": prediction_id}
+    try:
+        response = requests.post(url, params=params)
+        response.raise_for_status()
+        logger.info(f"POST request sent successfully for prediction_id: {prediction_id}")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error sending POST request: {e}")
 
 
 def consume():
@@ -93,6 +105,8 @@ def consume():
                             response_status = 'ready'
                             logger.info(f'S3: {upload_res} DynamoDB: {db_res} SQS: {sqs_res}')
 
+                        if response_status == 'ready':
+                            send_post_request(prediction_id)
 
 
 if __name__ == "__main__":
