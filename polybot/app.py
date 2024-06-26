@@ -3,6 +3,7 @@ from loguru import logger
 from flask import request
 from TelegramBot import TelegramBot
 from utils import Utils
+from ResultsHandler import ResultsHandler
 
 app = flask.Flask(__name__)
 
@@ -25,13 +26,13 @@ def webhook():
 @app.route(f'/results', methods=['POST'])
 def results():
     prediction_id = request.args.get('predictionId')
+    result = ResultsHandler(prediction_id)
+    logger.info(result)
 
-    # TODO use the prediction_id to retrieve results from DynamoDB and send to the end-user
+    # chat_id = ...
+    # text_results = ...
 
-    chat_id = ...
-    text_results = ...
-
-    bot.send_text(chat_id, text_results)
+    #bot.send_text(chat_id, text_results)
     return 'Ok'
 
 
