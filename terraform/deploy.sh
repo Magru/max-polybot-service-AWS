@@ -47,7 +47,7 @@ EOL
 
 # Write the .env file
 cat <<EOL > /home/ubuntu/polybot/.env
-POLYBOT_IMG_NAME=magrufol/polybot:2.0.7
+POLYBOT_IMG_NAME=magrufol/polybot:3.0.1
 IMAGES_BUCKET_NAME=max-yolo5
 EOL
 

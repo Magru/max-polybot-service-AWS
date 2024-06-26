@@ -1,5 +1,7 @@
-FROM ultralytics/yolov5:latest-cpu
+FROM ultralytics/yolov5:v6.2-cpu
 WORKDIR /usr/src/app
+ENV BUCKET_NAME=max-yolo5
+ENV SQS_QUEUE_NAME=https://sqs.eu-west-2.amazonaws.com/019273956931/max-aws-project-sqs.fifo
 RUN pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt

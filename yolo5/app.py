@@ -1,88 +1,98 @@
 import time
+import uuid
+from decimal import Decimal
 from pathlib import Path
 from detect import run
 import yaml
+import json
 from loguru import logger
 import os
 import boto3
+from AWS import AWS
 
 images_bucket = os.environ['BUCKET_NAME']
 queue_name = os.environ['SQS_QUEUE_NAME']
 
-sqs_client = boto3.client('sqs', region_name='YOUR_REGION_HERE')
+sqs_client = boto3.client('sqs', region_name='eu-west-2')
 
 with open("data/coco128.yaml", "r") as stream:
     names = yaml.safe_load(stream)['names']
 
 
+def convert_to_dynamodb_format(obj):
+    if isinstance(obj, float):
+        return Decimal(str(obj))
+    elif isinstance(obj, dict):
+        return {k: convert_to_dynamodb_format(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_to_dynamodb_format(v) for v in obj]
+    else:
+        return obj
+
+
 def consume():
+    sqs = AWS('sqs')
+    s3 = AWS('s3')
+    db = AWS('dynamodb')
+
     while True:
-        response = sqs_client.receive_message(QueueUrl=queue_name, MaxNumberOfMessages=1, WaitTimeSeconds=5)
+        message = sqs.receive_message(queue_name)
+        response_status = 'not_ready'
 
-        if 'Messages' in response:
-            message = response['Messages'][0]['Body']
-            receipt_handle = response['Messages'][0]['ReceiptHandle']
+        if message["status"] == "success":
+            sqs_query = json.loads(message["message"])
+            prediction_id = str(uuid.uuid4())
 
-            # Use the ReceiptHandle as a prediction UUID
-            prediction_id = response['Messages'][0]['MessageId']
+            res = s3.download_file(images_bucket, sqs_query["image_id"], f'images/{sqs_query["image_id"]}')
 
-            logger.info(f'prediction: {prediction_id}. start processing')
+            if res["status"] == "success":
+                original_img_path = res["file_path"]
+                dir_name, file_name = os.path.split(original_img_path)
 
-            # Receives a URL parameter representing the image to download from S3
-            img_name = ...  # TODO extract from `message`
-            chat_id = ...  # TODO extract from `message`
-            original_img_path = ...  # TODO download img_name from S3, store the local image path in original_img_path
+                run(
+                    weights='yolov5s.pt',
+                    data='data/coco128.yaml',
+                    source=original_img_path,
+                    project='static/data',
+                    name=prediction_id,
+                    save_txt=True
+                )
 
-            logger.info(f'prediction: {prediction_id}/{original_img_path}. Download img completed')
+                predicted_img_path = Path(f'static/data/{prediction_id}/{file_name}')
+                pred_summary_path = Path(f'static/data/{prediction_id}/labels/{file_name.split(".")[0]}.txt')
 
-            # Predicts the objects in the image
-            run(
-                weights='yolov5s.pt',
-                data='data/coco128.yaml',
-                source=original_img_path,
-                project='static/data',
-                name=prediction_id,
-                save_txt=True
-            )
+                if pred_summary_path.exists():
+                    with open(pred_summary_path) as f:
+                        labels = f.read().splitlines()
+                        labels = [line.split(' ') for line in labels]
+                        labels = [{
+                            'class': names[int(l[0])],
+                            'cx': float(l[1]),
+                            'cy': float(l[2]),
+                            'width': float(l[3]),
+                            'height': float(l[4]),
+                        } for l in labels]
 
-            logger.info(f'prediction: {prediction_id}/{original_img_path}. done')
+                    object_key = f'predicted_images/{prediction_id}_{file_name}'
+                    upload_res = s3.upload_file(images_bucket, predicted_img_path, object_key)
 
-            # This is the path for the predicted image with labels The predicted image typically includes bounding
-            # boxes drawn around the detected objects, along with class labels and possibly confidence scores.
-            predicted_img_path = Path(f'static/data/{prediction_id}/{original_img_path}')
+                    if upload_res["status"] == "success":
+                        converted_labels = json.loads(json.dumps(labels), parse_float=Decimal)
 
-            # TODO Uploads the predicted image (predicted_img_path) to S3 (be careful not to override the original
-            #  image).
+                        prediction_response = {
+                            'prediction_id': prediction_id,
+                            'predicted_img_path': str(object_key),
+                            'labels': converted_labels
+                        }
 
-            # Parse prediction labels and create a summary
-            pred_summary_path = Path(f'static/data/{prediction_id}/labels/{original_img_path.split(".")[0]}.txt')
-            if pred_summary_path.exists():
-                with open(pred_summary_path) as f:
-                    labels = f.read().splitlines()
-                    labels = [line.split(' ') for line in labels]
-                    labels = [{
-                        'class': names[int(l[0])],
-                        'cx': float(l[1]),
-                        'cy': float(l[2]),
-                        'width': float(l[3]),
-                        'height': float(l[4]),
-                    } for l in labels]
+                        dynamodb_item = convert_to_dynamodb_format(prediction_response)
 
-                logger.info(f'prediction: {prediction_id}/{original_img_path}. prediction summary:\n\n{labels}')
+                        db_res = db.write_to_dynamodb('max-aws-project-db', dynamodb_item)
+                        if db_res["status"] == "success":
+                            sqs_res = sqs.delete_message(queue_name, message["receipt_handle"])
+                            response_status = 'ready'
+                            logger.info(f'S3: {upload_res} DynamoDB: {db_res} SQS: {sqs_res}')
 
-                prediction_summary = {
-                    'prediction_id': prediction_id,
-                    'original_img_path': original_img_path,
-                    'predicted_img_path': predicted_img_path,
-                    'labels': labels,
-                    'time': time.time()
-                }
-
-                # TODO store the prediction_summary in a DynamoDB table
-                # TODO perform a GET request to Polybot to `/results` endpoint
-
-            # Delete the message from the queue as the job is considered as DONE
-            sqs_client.delete_message(QueueUrl=queue_name, ReceiptHandle=receipt_handle)
 
 
 if __name__ == "__main__":
