@@ -2,8 +2,8 @@ name: Polybot Deployment
 
 on:
   push:
-    paths:
-      - 'polybot/**'
+#    paths:
+#      - 'polybot/**'
     branches:
       - main
 
