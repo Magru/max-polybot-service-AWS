@@ -6,7 +6,7 @@ class ResultsHandler:
     def __init__(self, predict_id):
         self.predict_id = predict_id
         self.result = None
-        self.dynamodb = boto3.resource('dynamodb')
+        self.dynamodb = boto3.resource('dynamodb', 'eu-west-2')
         self.table = self.dynamodb.Table('max-aws-project-db')
 
     def fetch_result(self):
