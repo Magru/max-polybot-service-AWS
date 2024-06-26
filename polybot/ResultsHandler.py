@@ -18,7 +18,7 @@ class ResultsHandler:
                 }
             )
             item = response.get('Item')
-            logger.info(item)
+            logger.info(response)
 
             if item:
                 self.result = item  # Store the result
