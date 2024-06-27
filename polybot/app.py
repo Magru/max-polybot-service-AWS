@@ -26,10 +26,10 @@ def webhook():
 @app.route(f'/results', methods=['POST'])
 def results():
     prediction_id = request.args.get('predictionId')
-    logger.info('App results() ' + prediction_id)
     result_handler = ResultsHandler(prediction_id)
     fetch_res = result_handler.fetch_result()
     logger.info(fetch_res)
+    logger.info(result_handler.result)
 
     # chat_id = ...
     # text_results = ...
