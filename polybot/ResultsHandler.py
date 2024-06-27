@@ -15,7 +15,9 @@ class ResultsHandler:
             response = self.dynamodb.get_item(
                 TableName='max-aws-project-db',
                 Key={
-                    'prediction_id': self.predict_id
+                    'prediction_id': {
+                        'S': self.predict_id
+                    }
                 }
             )
             item = response.get('Item')
