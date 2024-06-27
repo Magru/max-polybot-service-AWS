@@ -35,7 +35,7 @@ def results():
     # text_results = ...
 
     #bot.send_text(chat_id, text_results)
-    return prediction_id
+    return result_handler.result
 
 
 @app.route(f'/loadTest/', methods=['POST'])

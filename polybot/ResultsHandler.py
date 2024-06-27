@@ -54,7 +54,7 @@ class ResultsHandler:
         return self.result
 
     @staticmethod
-    def extract_labels(self, item):
+    def extract_labels(item):
         labels_list = item.get('labels', {}).get('L', [])
         labels_count = {}
         for label in labels_list:
@@ -67,7 +67,7 @@ class ResultsHandler:
         return labels_count
 
     @staticmethod
-    def beautify_data(self, data):
+    def beautify_data(data):
         with open('emoji_map.json', 'r') as file:
             emoji_map = json.load(file)
 
