@@ -8,12 +8,12 @@ class ResultsHandler:
         self.predict_id = predict_id
         self.result = None
         self.dynamodb = boto3.resource('dynamodb', 'eu-west-2')
-        self.table = self.dynamodb.Table('max-aws-project-db')
 
     def fetch_result(self):
-        logger.info('AAAAA')
+        logger.info(self.predict_id)
         try:
-            response = self.table.get_item(
+            response = self.dynamodb.get_item(
+                TableName='max-aws-project-db',
                 Key={
                     'prediction_id': self.predict_id
                 }
