@@ -22,3 +22,7 @@ variable "app_server_instance_build_version" {
   description = "Build version"
   type        = string
 }
+variable "dynamodb_table_name" {
+  description = "DynamoDB Table Name"
+  type        = string
+}

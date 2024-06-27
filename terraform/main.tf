@@ -181,7 +181,7 @@ resource "aws_iam_role_policy" "ec2_role_policy" {
           "dynamodb:Query",
           "dynamodb:Scan"
         ]
-        Resource = "arn:aws:dynamodb:eu-west-2:019273956931:table/your-dynamodb-table-name"
+        Resource = "arn:aws:dynamodb:eu-west-2:019273956931:table/${var.dynamodb_table_name}"
       }
     ]
   })

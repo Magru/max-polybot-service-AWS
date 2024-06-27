@@ -1,3 +1,4 @@
+import os
 import boto3
 from loguru import logger
 from botocore.exceptions import ClientError
@@ -8,12 +9,13 @@ class ResultsHandler:
         self.predict_id = predict_id
         self.result = None
         self.dynamodb = boto3.client('dynamodb', 'eu-west-2')
+        self.table_name = os.environ['DYNAMODB_TABLE_NAME']
 
     def fetch_result(self):
         logger.info(self.predict_id)
         try:
             response = self.dynamodb.get_item(
-                TableName='max-aws-project-db',
+                TableName=self.table_name,
                 Key={
                     'prediction_id': {
                         'S': self.predict_id
