@@ -203,6 +203,11 @@ resource "aws_instance" "app_server" {
   associate_public_ip_address = true
   user_data_replace_on_change = true
 
+  root_block_device {
+    volume_size = 12
+    volume_type = "gp2"
+  }
+
   user_data = file("./deploy.sh")
 
   tags = {
@@ -223,6 +228,11 @@ resource "aws_instance" "app_server_2" {
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
   associate_public_ip_address = true
   user_data_replace_on_change = true
+
+  root_block_device {
+    volume_size = 12
+    volume_type = "gp2"
+  }
 
   user_data = file("./deploy.sh")
 
