@@ -7,7 +7,7 @@ class ResultsHandler:
     def __init__(self, predict_id):
         self.predict_id = predict_id
         self.result = None
-        self.dynamodb = boto3.resource('dynamodb', 'eu-west-2')
+        self.dynamodb = boto3.client('dynamodb', 'eu-west-2')
 
     def fetch_result(self):
         logger.info(self.predict_id)
