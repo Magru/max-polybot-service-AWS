@@ -26,6 +26,7 @@ def webhook():
 @app.route(f'/results', methods=['POST'])
 def results():
     prediction_id = request.args.get('predictionId')
+    logger.info(prediction_id)
     result = ResultsHandler(prediction_id)
     logger.info(result.result)
 
