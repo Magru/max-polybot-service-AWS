@@ -15,11 +15,12 @@ class ResultsHandler:
         try:
             response = self.table.get_item(
                 Key={
-                    'predict_id': self.predict_id
+                    'prediction_id': self.predict_id
                 }
             )
             item = response.get('Item')
             logger.info(response)
+            logger.info(item)
 
             if item:
                 self.result = item  # Store the result
