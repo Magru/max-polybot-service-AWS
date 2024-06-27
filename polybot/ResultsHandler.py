@@ -29,7 +29,7 @@ class ResultsHandler:
             logger.info(item)
             if item:
                 try:
-                    self.chat_id = item.get('chat_id', {}).get('S')
+                    self.chat_id = item.get('chat_id', {}).get('N')
                 except Exception as e:
                     logger.error(f"Error extracting chat_id: {str(e)}")
                     self.result = {
