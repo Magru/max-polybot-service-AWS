@@ -94,11 +94,12 @@ class TelegramBot:
                     run_res = object_detection.run()
 
                     if run_res['success']:
-                        success_message = f"""🔎 Image Analysis Initiated! 🖼️\n 
-                        🤖Our AI is now examining your image...\n 
-                        ✨Detecting objects and patterns\n
-                        🧠 Processing with advanced algorithms\n
+                        success_message = f"""🔎 Image Analysis Initiated! 🖼️
+                        🤖 Our AI is now examining your image...
+                        ✨ Detecting objects and patterns
+                        🧠 Processing with advanced algorithms
                         Please stand by for exciting results! (Chat ID: {chat_id}) 🚀"""
+
                         self.send_text(chat_id, success_message)
                     else:
                         error_message = f"""Oops! 😅 It seems we've encountered a little hiccup:
