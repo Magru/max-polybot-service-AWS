@@ -94,7 +94,8 @@ def consume():
                         prediction_response = {
                             'prediction_id': prediction_id,
                             'predicted_img_path': str(object_key),
-                            'labels': converted_labels
+                            'labels': converted_labels,
+                            'chat_id': sqs_query["image_id"]
                         }
 
                         dynamodb_item = convert_to_dynamodb_format(prediction_response)

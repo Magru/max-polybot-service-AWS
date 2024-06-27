@@ -12,6 +12,7 @@ class ResultsHandler:
         self.result = None
         self.dynamodb = boto3.client('dynamodb', 'eu-west-2')
         self.table_name = os.environ['DYNAMODB_TABLE_NAME']
+        self.chat_id = None
 
     def fetch_result(self):
         logger.info(self.predict_id)
@@ -27,6 +28,16 @@ class ResultsHandler:
             item = response.get('Item')
 
             if item:
+                try:
+                    self.chat_id = item.get('chat_id', {}).get('S')
+                except Exception as e:
+                    logger.error(f"Error extracting chat_id: {str(e)}")
+                    self.result = {
+                        'status': 'error',
+                        'error': f"Error extracting chat_id: {str(e)}"
+                    }
+                    return self.result
+
                 labels = self.extract_labels(item)
                 beautified_data = self.beautify_data(labels)
                 self.result = {

@@ -27,15 +27,11 @@ def webhook():
 def results():
     prediction_id = request.args.get('predictionId')
     result_handler = ResultsHandler(prediction_id)
-    fetch_res = result_handler.fetch_result()
-    logger.info(fetch_res)
-    logger.info(result_handler.result)
+    result_handler.fetch_result()
+    if result_handler.result["status"] == "success":
+        bot.send_text(result_handler.chat_id, result_handler.result["beautified_data"])
 
-    # chat_id = ...
-    # text_results = ...
-
-    #bot.send_text(chat_id, text_results)
-    return result_handler.result
+    return "Ok"
 
 
 @app.route(f'/loadTest/', methods=['POST'])
