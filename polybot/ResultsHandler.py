@@ -26,7 +26,7 @@ class ResultsHandler:
                 }
             )
             item = response.get('Item')
-
+            logger.info(item)
             if item:
                 try:
                     self.chat_id = item.get('chat_id', {}).get('S')
