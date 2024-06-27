@@ -97,6 +97,8 @@ jobs:
         EOT
             echo "Updated .env file:"
             sudo cat .env
+            echo "Removing old Docker images"
+            sudo docker image prune -af
             echo "Pulling latest Docker image"
             sudo docker pull ${{ env.POLYBOT_IMG_NAME }}
             echo "Starting Docker Compose"
