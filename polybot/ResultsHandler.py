@@ -11,6 +11,7 @@ class ResultsHandler:
         self.table = self.dynamodb.Table('max-aws-project-db')
 
     def fetch_result(self):
+        logger.info('AAAAA')
         try:
             response = self.table.get_item(
                 Key={
