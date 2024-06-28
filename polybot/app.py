@@ -28,6 +28,7 @@ def results():
     prediction_id = request.args.get('predictionId')
     result_handler = ResultsHandler(prediction_id)
     result_handler.fetch_result()
+
     logger.info(result_handler.result)
     logger.info(result_handler.chat_id)
 
