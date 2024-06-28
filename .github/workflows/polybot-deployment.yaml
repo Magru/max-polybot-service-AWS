@@ -2,8 +2,8 @@ name: Polybot Deployment
 
 on:
   push:
-#    paths:
-#      - 'polybot/**'
+    paths:
+      - 'polybot/**'
     branches:
       - main
 
@@ -29,11 +29,11 @@ jobs:
 
     - name: Initialize Terraform
       run: terraform init
-      working-directory: terraform
+      working-directory: terraform/polybot
 
     - name: Apply Terraform
       run: terraform apply -var-file=main.tfvars -auto-approve
-      working-directory: terraform
+      working-directory: terraform/polybot
 
     - name: Capture Terraform Output
       id: capture-output
@@ -46,9 +46,9 @@ jobs:
         echo ${APP_SERVER_IP_PROCESSED}
         echo ${APP_SERVER_2_IP_PROCESSED}
         
-        echo "APP_SERVER_IP=18.133.156.84" >> $GITHUB_ENV
-        echo "APP_SERVER_2_IP=3.8.180.66" >> $GITHUB_ENV
-      working-directory: terraform
+        echo "APP_SERVER_IP=13.40.8.66" >> $GITHUB_ENV
+        echo "APP_SERVER_2_IP=18.169.0.144" >> $GITHUB_ENV
+      working-directory: terraform/polybot
 
     - name: Read .env file
       id: read-env
