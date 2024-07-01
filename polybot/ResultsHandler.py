@@ -29,7 +29,6 @@ class ResultsHandler:
             logger.info(item)
             if item:
                 predicted_img = self.download_image(item, self.predict_id)
-                logger.info(predicted_img)
                 try:
                     self.chat_id = item.get('chat_id', {}).get('N')
                 except Exception as e:
@@ -45,7 +44,8 @@ class ResultsHandler:
                 self.result = {
                     'status': 'success',
                     'error': None,
-                    'beautified_data': beautified_data
+                    'beautified_data': beautified_data,
+                    'predicted_image_path': predicted_img
                 }
             else:
                 self.result = {
