@@ -9,7 +9,7 @@
 
   "about_command": "Max-Python-Project is a Telegram bot designed for image manipulation. Developed with Python, it utilizes advanced algorithms to apply filters, transform images, and provide various image editing features. Your chat ID is {chat_id}.",
 
-  "error_message": "Some error...  Sorry",
+  "error_message": "Some error... Sorry",
 
   "default_response": "I'm not sure how to handle that command, {chat_id}. Try /help for more information.",
 
