@@ -37,8 +37,7 @@ def results():
         else:
             bot.send_text(result_handler.chat_id, result_handler.result["beautified_data"])
 
-        clean_res = result_handler.clean_up()
-        bot.send_text(result_handler.chat_id, clean_res)
+        result_handler.clean_up()
 
     return "Ok"
 

@@ -129,4 +129,4 @@ class ResultsHandler:
             result['result'] = False
             result['message'] = f'The directory {res_images_dir} does not exist.'
 
-        return result
+        logger.info(result)
