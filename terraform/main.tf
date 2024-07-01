@@ -325,7 +325,10 @@ resource "aws_launch_template" "max-aws-asg" {
     }
   }
 
-  user_data = base64encode(file("./deploy-yolo5-asg.sh"))
+#   user_data = base64encode(file("./deploy-yolo5-asg.sh"))
+  user_data = base64encode(templatefile("${path.module}/templates/deploy-yolo5-asg.tpl", {
+    yolo5_img_name      = var.yolo5_img_name
+  }))
 
   tag_specifications {
     resource_type = "instance"
