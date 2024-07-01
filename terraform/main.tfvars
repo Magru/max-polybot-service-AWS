@@ -6,4 +6,4 @@ app_server_instance_build_version="0.0.1"
 project_name_prefix="max-aws-project"
 dynamodb_table_name="max-aws-project-db"
 yolo5_server_instance_type="t3.medium"
-asg_launch_version=8
+asg_launch_version=9
