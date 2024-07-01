@@ -29,11 +29,11 @@ jobs:
 
     - name: Initialize Terraform
       run: terraform init
-      working-directory: terraform/polybot
+      working-directory: terraform
 
     - name: Apply Terraform
       run: terraform apply -var-file=main.tfvars -auto-approve
-      working-directory: terraform/polybot
+      working-directory: terraform
 
     - name: Capture Terraform Output
       id: capture-output
@@ -46,14 +46,13 @@ jobs:
         echo ${APP_SERVER_IP_PROCESSED}
         echo ${APP_SERVER_2_IP_PROCESSED}
         
-        echo "APP_SERVER_IP=13.40.8.66" >> $GITHUB_ENV
-        echo "APP_SERVER_2_IP=18.169.0.144" >> $GITHUB_ENV
-      working-directory: terraform/polybot
+        echo "APP_SERVER_IP=18.132.42.146" >> $GITHUB_ENV
+        echo "APP_SERVER_2_IP=13.40.81.115" >> $GITHUB_ENV
+      working-directory: terraform
 
     - name: Read .env file
       id: read-env
       run: |
-        export $(grep -v '^#' polybot/.env | xargs)
         export $(grep -v '^#' polybot/.env | xargs)
         echo "POLYBOT_IMG_NAME=${POLYBOT_IMG_NAME}"
         echo "IMAGES_BUCKET_NAME=${IMAGES_BUCKET_NAME}"

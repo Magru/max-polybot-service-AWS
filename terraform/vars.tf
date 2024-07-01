@@ -6,6 +6,10 @@ variable "app_server_instance_type" {
   description = "App server instance type"
   type        = string
 }
+variable "yolo5_server_instance_type" {
+  description = "Yolo5 server instance type"
+  type        = string
+}
 variable "app_server_instance_aim" {
   description = "Instance AIM"
   type        = string
@@ -24,5 +28,9 @@ variable "app_server_instance_build_version" {
 }
 variable "dynamodb_table_name" {
   description = "DynamoDB Table Name"
+  type        = string
+}
+variable "asg_launch_version" {
+  description = "Auto Scale Group Launch template version"
   type        = string
 }

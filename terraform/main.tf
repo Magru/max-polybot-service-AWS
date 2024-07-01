@@ -245,6 +245,149 @@ resource "aws_instance" "app_server_2" {
   depends_on = [aws_security_group.combined_sg]
 }
 
+resource "aws_iam_role" "asg_role" {
+  name = "${var.project_name_prefix}-asg-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "asg_role_policy" {
+  name = "${var.project_name_prefix}-asg-role-policy"
+  role = aws_iam_role.asg_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "sqs:ReceiveMessage",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes"
+        ]
+        Resource = "arn:aws:sqs:eu-west-2:019273956931:max-aws-project-sqs.fifo"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:GetItem"
+        ]
+        Resource = "arn:aws:dynamodb:eu-west-2:019273956931:table/${var.dynamodb_table_name}"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "asg_instance_profile" {
+  name = "${var.project_name_prefix}-asg-instance-profile"
+  role = aws_iam_role.asg_role.name
+}
+
+resource "aws_launch_template" "max-aws-asg" {
+  name_prefix   = "${var.project_name_prefix}-lt-"
+  image_id      = var.app_server_instance_aim
+  instance_type = var.yolo5_server_instance_type
+  key_name      = var.app_server_instance_kp_name
+
+  iam_instance_profile {
+    name = aws_iam_instance_profile.asg_instance_profile.name
+  }
+
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups = [aws_security_group.combined_sg.id]
+  }
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_size = 25
+      volume_type = "gp2"
+    }
+  }
+
+  user_data = base64encode(file("./deploy-yolo5-asg.sh"))
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name      = "${var.project_name_prefix}-launch-template"
+      Terraform = "true"
+      version = var.asg_launch_version
+    }
+  }
+}
+
+module "autoscaling_group" {
+  source = "terraform-aws-modules/autoscaling/aws"
+
+  name = "${var.project_name_prefix}-asg"
+  create_launch_template = false
+  launch_template_id = aws_launch_template.max-aws-asg.id
+  launch_template_version = var.asg_launch_version
+  #1
+  desired_capacity = 1
+  #1
+  min_size = 1
+  #2
+  max_size = 2
+  vpc_zone_identifier = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
+
+  tags = {
+    Name      = "${var.project_name_prefix}-autoscaling-group"
+    Terraform = "true"
+  }
+}
+
+output "autoscaling_group_id" {
+  value = module.autoscaling_group.autoscaling_group_id
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+  alarm_name          = "${var.project_name_prefix}-high-cpu-alarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 60
+
+  dimensions = {
+    AutoScalingGroupName = module.autoscaling_group.autoscaling_group_id
+  }
+
+  alarm_description = "This metric monitors EC2 CPU utilization"
+  tags = {
+    Terraform = "true"
+    Name      = "${var.project_name_prefix}-cpu-high-alarm"
+  }
+}
+
+resource "aws_autoscaling_policy" "scale_out" {
+  name                   = "${var.project_name_prefix}-scale-out"
+  policy_type            = "TargetTrackingScaling"
+  autoscaling_group_name = module.autoscaling_group.autoscaling_group_name
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 60.0
+  }
+}
+
 output "app_server_instance_ip" {
   value = aws_instance.app_server.public_ip
 }
@@ -252,3 +395,5 @@ output "app_server_instance_ip" {
 output "app_server_2_instance_ip" {
   value = aws_instance.app_server_2.public_ip
 }
+
+#TODO: DynamoDB, SQS

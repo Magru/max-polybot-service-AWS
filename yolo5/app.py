@@ -49,6 +49,7 @@ def consume():
 
     while True:
         message = sqs.receive_message(queue_name)
+        logger.info(message)
         response_status = 'not_ready'
 
         if message["status"] == "success":
