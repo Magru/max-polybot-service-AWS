@@ -30,8 +30,12 @@ def results():
     result_handler.fetch_result()
 
     if result_handler.result["status"] == "success":
-        logger.info(result_handler.result['predicted_image_path'])
-        bot.send_text(result_handler.chat_id, result_handler.result["beautified_data"])
+        if result_handler.result["predicted_image_path"]["result"] == "success":
+            bot.send_photo(result_handler.chat_id,
+                           result_handler.result["predicted_image_path"]["path"],
+                           result_handler.result["beautified_data"])
+        else:
+            bot.send_text(result_handler.chat_id, result_handler.result["beautified_data"])
 
     return "Ok"
 

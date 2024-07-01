@@ -57,13 +57,14 @@ class TelegramBot:
 
         return file_info.file_path
 
-    def send_photo(self, chat_id, img_path):
+    def send_photo(self, chat_id, img_path, caption):
         if not os.path.exists(img_path):
             raise RuntimeError("Image path doesn't exist")
 
         self.telegram_bot_client.send_photo(
             chat_id,
-            InputFile(img_path)
+            InputFile(img_path),
+            caption
         )
 
     def text_response_handler(self, command, chat_id):

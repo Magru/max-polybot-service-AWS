@@ -103,7 +103,7 @@ class ResultsHandler:
         s3 = boto3.client('s3')
         try:
             s3.download_file(self.bucket_name, predicted_img_path, f'{dest_path}/{file_name}')
-            return {'result': True, 'path': f'{dest_path}/{file_name}'}
+            return {'result': 'success', 'path': f'{dest_path}/{file_name}'}
         except ClientError as e:
             logger.error(f'Error on downloading from bucket: {e}.')
-            return {'result': False, 'path': None}
+            return {'result': 'fail', 'path': None}
