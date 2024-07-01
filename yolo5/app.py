@@ -49,17 +49,13 @@ def consume():
 
     while True:
         message = sqs.receive_message(queue_name)
-        logger.info(message)
         response_status = 'not_ready'
 
         if message["status"] == "success":
             sqs_query = json.loads(message["message"])
             prediction_id = str(uuid.uuid4())
-            logger.info(sqs_query)
 
             res = s3.download_file(images_bucket, sqs_query["image_id"], f'images/{sqs_query["image_id"]}')
-
-            logger.info(res)
 
             if res["status"] == "success":
                 original_img_path = res["file_path"]
@@ -76,7 +72,6 @@ def consume():
 
                 predicted_img_path = Path(f'static/data/{prediction_id}/{file_name}')
                 pred_summary_path = Path(f'static/data/{prediction_id}/labels/{file_name.split(".")[0]}.txt')
-                logger.info(pred_summary_path.exists())
                 if pred_summary_path.exists():
                     with open(pred_summary_path) as f:
                         labels = f.read().splitlines()

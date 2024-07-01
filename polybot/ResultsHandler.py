@@ -12,10 +12,10 @@ class ResultsHandler:
         self.result = None
         self.dynamodb = boto3.client('dynamodb', 'eu-west-2')
         self.table_name = os.environ['DYNAMODB_TABLE_NAME']
+        self.bucket_name = os.environ['IMAGES_BUCKET_NAME']
         self.chat_id = None
 
     def fetch_result(self):
-        logger.info(self.predict_id)
         try:
             response = self.dynamodb.get_item(
                 TableName='max-aws-project-db',
@@ -28,6 +28,8 @@ class ResultsHandler:
             item = response.get('Item')
             logger.info(item)
             if item:
+                predicted_img = self.download_image(item, self.predict_id)
+                logger.info(predicted_img)
                 try:
                     self.chat_id = item.get('chat_id', {}).get('N')
                 except Exception as e:
@@ -90,3 +92,18 @@ class ResultsHandler:
             output += f"{emoji} {item.capitalize()}: {count}\n"
 
         return output
+
+    def download_image(self, item, file_name):
+        predicted_img_path = item.get('predicted_img_path', {}).get('S')
+
+        dest_path = 'res_images'
+        if not os.path.exists(dest_path):
+            os.makedirs(dest_path)
+
+        s3 = boto3.client('s3')
+        try:
+            s3.download_file(self.bucket_name, predicted_img_path, f'{dest_path}/{file_name}')
+            return {'result': True, 'path': f'{dest_path}/{file_name}'}
+        except ClientError as e:
+            logger.error(f'Error on downloading from bucket: {e}.')
+            return {'result': False, 'path': None}

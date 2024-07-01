@@ -29,9 +29,6 @@ def results():
     result_handler = ResultsHandler(prediction_id)
     result_handler.fetch_result()
 
-    logger.info(result_handler.result)
-    logger.info(result_handler.chat_id)
-
     if result_handler.result["status"] == "success":
         bot.send_text(result_handler.chat_id, result_handler.result["beautified_data"])
 

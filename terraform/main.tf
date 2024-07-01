@@ -284,6 +284,14 @@ resource "aws_iam_role_policy" "asg_role_policy" {
           "dynamodb:GetItem"
         ]
         Resource = "arn:aws:dynamodb:eu-west-2:019273956931:table/${var.dynamodb_table_name}"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = "arn:aws:s3:::max-yolo5/*"
       }
     ]
   })
