@@ -34,7 +34,7 @@ cat <<EOL > /home/ubuntu/yolo5/docker-compose.yaml
 version: '3'
 services:
   polybot:
-    image: \${yolo5_img_name}
+    image: ${yolo5_img_name}
     container_name: yolo5
     env_file:
       - .env
