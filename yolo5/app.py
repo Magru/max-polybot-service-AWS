@@ -32,7 +32,7 @@ def convert_to_dynamodb_format(obj):
 
 
 def send_post_request(prediction_id):
-    url = "https://magru.int-devops.click/results"
+    url = "http://magru.int-devops.click/results"
     params = {"predictionId": prediction_id}
     try:
         response = requests.post(url, params=params)
