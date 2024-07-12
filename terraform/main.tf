@@ -348,11 +348,11 @@ module "autoscaling_group" {
   launch_template_id = aws_launch_template.max-aws-asg.id
   launch_template_version = var.asg_launch_version
   #1
-  desired_capacity = 0
+  desired_capacity = 1
   #1
-  min_size = 0
+  min_size = 1
   #2
-  max_size = 0
+  max_size = 2
   vpc_zone_identifier = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
 
   tags = {
