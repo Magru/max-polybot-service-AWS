@@ -355,11 +355,11 @@ module "autoscaling_group" {
   launch_template_id = aws_launch_template.max-aws-asg.id
   launch_template_version = var.asg_launch_version
   #1
-  desired_capacity = 1
+  desired_capacity = 0
   #1
-  min_size = 1
+  min_size = 0
   #2
-  max_size = 2
+  max_size = 0
   vpc_zone_identifier = [aws_subnet.subnet_a.id, aws_subnet.subnet_b.id]
 
   tags = {
@@ -414,4 +414,4 @@ output "app_server_2_instance_ip" {
   value = aws_instance.app_server_2.public_ip
 }
 
-#TODO: DynamoDB, SQS
+#TODO: DynamoDB, SQS, ALB
