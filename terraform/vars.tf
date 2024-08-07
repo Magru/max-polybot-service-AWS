@@ -10,7 +10,7 @@ variable "yolo5_server_instance_type" {
   description = "Yolo5 server instance type"
   type        = string
 }
-variable "app_server_instance_aim" {
+variable "app_server_instance_ami" {
   description = "Instance AIM"
   type        = string
 }
@@ -22,12 +22,8 @@ variable "project_name_prefix" {
   description = "Project resources name prefix"
   type        = string
 }
-variable "app_server_instance_build_version" {
+variable "project_build_version" {
   description = "Build version"
-  type        = string
-}
-variable "dynamodb_table_name" {
-  description = "DynamoDB Table Name"
   type        = string
 }
 variable "asg_launch_version" {
@@ -37,4 +33,9 @@ variable "asg_launch_version" {
 variable "yolo5_img_name" {
   description = "Yolo5 image name"
   type        = string
+}
+variable "max_az_count" {
+  description = "Maximum number of AZs to use for subnet creation"
+  type        = number
+  default     = 2
 }

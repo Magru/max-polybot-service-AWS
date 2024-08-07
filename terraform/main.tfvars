@@ -1,10 +1,9 @@
 region="eu-west-2"
 app_server_instance_type="t2.micro"
-app_server_instance_aim="ami-053a617c6207ecc7b"
+app_server_instance_ami="ami-053a617c6207ecc7b"
 app_server_instance_kp_name="max-london-kp"
-app_server_instance_build_version="1.0.0"
-project_name_prefix="max-aws-project"
-dynamodb_table_name="max-aws-project-db"
+project_build_version="2.0.0"
+project_name_prefix="max-terraform-project"
 yolo5_server_instance_type="t3.medium"
-asg_launch_version=11
+asg_launch_version=2
 yolo5_img_name="magrufol/yolo5:4.0.3"
