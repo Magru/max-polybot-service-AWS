@@ -37,13 +37,13 @@ jobs:
     - name: Capture Terraform Output
       id: capture-output
       run: |
-        echo "Capturing instance IPs..."
-        APP_SERVER_IP=$(terraform output -raw app_server_instance_ip)
-        APP_SERVER_2_IP=$(terraform output -raw app_server_2_instance_ip)
-        APP_SERVER_IP_PROCESSED=${APP_SERVER_IP%%::*}
-        APP_SERVER_2_IP_PROCESSED=${APP_SERVER_2_IP%%::*}
-        echo ${APP_SERVER_IP_PROCESSED}
-        echo ${APP_SERVER_2_IP_PROCESSED}
+#        echo "Capturing instance IPs..."
+#        APP_SERVER_IP=$(terraform output -raw app_server_instance_ip)
+#        APP_SERVER_2_IP=$(terraform output -raw app_server_2_instance_ip)
+#        APP_SERVER_IP_PROCESSED=${APP_SERVER_IP%%::*}
+#        APP_SERVER_2_IP_PROCESSED=${APP_SERVER_2_IP%%::*}
+#        echo ${APP_SERVER_IP_PROCESSED}
+#        echo ${APP_SERVER_2_IP_PROCESSED}
         
         echo "APP_SERVER_IP=18.169.194.218" >> $GITHUB_ENV
         echo "APP_SERVER_2_IP=13.40.27.168" >> $GITHUB_ENV
