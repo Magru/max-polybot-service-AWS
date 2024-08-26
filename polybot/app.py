@@ -8,7 +8,7 @@ from ResultsHandler import ResultsHandler
 app = flask.Flask(__name__)
 
 TELEGRAM_TOKEN = Utils.get_secret('MX_TELEGRAM_BOT_TOKEN')
-TELEGRAM_APP_URL = 'magru.int-devops.click'
+TELEGRAM_APP_URL = Utils.get_secret('MX_TELEGRAM_BOT_URL')
 
 
 @app.route('/', methods=['GET'])

@@ -7,3 +7,4 @@ project_name_prefix="max-terraform-project"
 yolo5_server_instance_type="t3.medium"
 asg_launch_version=2
 yolo5_img_name="magrufol/yolo5:4.0.3"
+domain_hosted_zone="Z01194351X4YEXPPLZ8MN"

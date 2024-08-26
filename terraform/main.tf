@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "5.55"
+      version = "5.62"
     }
   }
   backend "s3" {
@@ -59,24 +59,24 @@ module "dynamodb_table" {
 
   global_secondary_indexes = [
     {
-      name               = "ChatIdIndex"
-      hash_key           = "chat_id"
-      range_key          = "prediction_id"
-      projection_type    = "ALL"
+      name            = "ChatIdIndex"
+      hash_key        = "chat_id"
+      range_key       = "prediction_id"
+      projection_type = "ALL"
       non_key_attributes = []
     },
     {
-      name               = "LabelsIndex"
-      hash_key           = "labels"
-      range_key          = "prediction_id"
-      projection_type    = "ALL"
+      name            = "LabelsIndex"
+      hash_key        = "labels"
+      range_key       = "prediction_id"
+      projection_type = "ALL"
       non_key_attributes = []
     },
     {
-      name               = "ImagePathIndex"
-      hash_key           = "predicted_img_path"
-      range_key          = "prediction_id"
-      projection_type    = "ALL"
+      name            = "ImagePathIndex"
+      hash_key        = "predicted_img_path"
+      range_key       = "prediction_id"
+      projection_type = "ALL"
       non_key_attributes = []
     }
   ]
@@ -210,7 +210,7 @@ module "combined_sg" {
       from_port = 80
       to_port   = 80
       protocol  = "tcp"
-      cidr_blocks = [module.main_vpc.vpc_cidr_block]
+      cidr_blocks = ["0.0.0.0/0"]
     }
   ]
 
@@ -411,36 +411,38 @@ output "asg_instance_profile_arn" {
 module "autoscaling_group" {
   source = "terraform-aws-modules/autoscaling/aws"
 
-  name                    = "${var.project_name_prefix}-asg"
-  create_launch_template  = true
+  name                   = "${var.project_name_prefix}-asg"
+  create_launch_template = true
 
-  launch_template_name = "${var.project_name_prefix}-launch-template"
-  image_id             = var.app_server_instance_ami
-  instance_type        = var.yolo5_server_instance_type
-  key_name             = var.app_server_instance_kp_name
+  launch_template_name      = "${var.project_name_prefix}-launch-template"
+  image_id                  = var.app_server_instance_ami
+  instance_type             = var.yolo5_server_instance_type
+  key_name                  = var.app_server_instance_kp_name
   iam_instance_profile_name = module.asg_instance_profile.instance_profile_name
-#   associate_public_ip_address = true
-#   security_group_ids = [module.combined_sg.security_group_id]
+  #   associate_public_ip_address = true
+  #   security_group_ids = [module.combined_sg.security_group_id]
 
   network_interfaces = [
     {
       delete_on_termination = true
       description           = "eth0"
       device_index          = 0
-      security_groups       = [module.combined_sg.security_group_id]
+      security_groups = [module.combined_sg.security_group_id]
     }
   ]
 
-  block_device_mappings = [{
-    device_name = "/dev/sda1"
-    ebs = {
-      volume_size = 25
-      volume_type = "gp2"
+  block_device_mappings = [
+    {
+      device_name = "/dev/sda1"
+      ebs = {
+        volume_size = 25
+        volume_type = "gp2"
+      }
     }
-  }]
+  ]
 
   user_data = base64encode(templatefile("${path.module}/templates/deploy-yolo5-asg.tpl", {
-    yolo5_img_name      = var.yolo5_img_name
+    yolo5_img_name = var.yolo5_img_name
   }))
 
   desired_capacity = 0 #1
@@ -487,7 +489,6 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
     Name      = "${var.project_name_prefix}-cpu-high-alarm"
   }
 }
-
 resource "aws_autoscaling_policy" "scale_out" {
   name                   = "${var.project_name_prefix}-scale-out"
   policy_type            = "TargetTrackingScaling"
@@ -501,4 +502,154 @@ resource "aws_autoscaling_policy" "scale_out" {
   }
 }
 
-#TODO: DynamoDB, SQS, ALB
+module "alb_sg" {
+  source = "./modules/aws-services/security-group"
+
+  vpc_id         = module.main_vpc.vpc_id
+  sg_name        = "${var.project_name_prefix}-alb-sg-aws-project"
+  sg_description = "ALB Security group for AWS project"
+  sg_name_prefix = var.project_name_prefix
+  build_version  = var.project_build_version
+
+  ingress_rules = [
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "HTTP"
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "Telegram Webhook"
+    },
+    {
+      from_port   = 8443
+      to_port     = 8443
+      protocol    = "tcp"
+#       cidr_blocks = ["149.154.160.0/20", "91.108.4.0/22"]
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "Telegram Webhook"
+    }
+  ]
+
+  egress_rules = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "Allow all outbound traffic"
+    }
+  ]
+
+  additional_tags = {
+    Name    = "${var.project_name_prefix}-alb-sg-aws-project"
+    Owner   = "DevOps Terraform project"
+    Project = "AWS Project"
+  }
+}
+resource "aws_lb" "app_alb" {
+  name               = "${var.project_name_prefix}-app-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [module.alb_sg.security_group_id]
+  subnets            = module.public_subnets[*].subnet_id
+
+  enable_deletion_protection = false
+  tags = {
+    Name = "${var.project_name_prefix}-app-alb"
+  }
+}
+resource "aws_lb_target_group" "app_tg" {
+  name        = "${var.project_name_prefix}-app2-tg"
+  port        = 8443
+  protocol    = "HTTPS"
+  vpc_id      = module.main_vpc.vpc_id
+  target_type = "instance"
+
+  health_check {
+    path                = "/"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+resource "aws_lb_target_group_attachment" "app_tg_attachment" {
+  count = local.az_count
+  target_group_arn = aws_lb_target_group.app_tg.arn
+  target_id        = module.app_servers[count.index].instance_id
+  port             = 8443
+}
+output "alb_dns_name" {
+  description = "DNS name of the ALB"
+  value       = aws_lb.app_alb.dns_name
+}
+
+module "magru_poly_subdomain" {
+  source = "./modules/aws-services/route53"
+
+  zone_id              = var.domain_hosted_zone
+  subdomain_name       = "max-poly.int-devops.click"
+  target_dns_name      = aws_lb.app_alb.dns_name
+  target_zone_id       = aws_lb.app_alb.zone_id
+  evaluate_target_health = true
+}
+
+module "magru_poly_subdomain_certificate" {
+  source        = "./modules/aws-services/acm"
+  zone_id       = var.domain_hosted_zone
+  subdomain_name = "max-poly.int-devops.click"
+  tags          = {
+    Name = "Max Poly Subdomain Certificate"
+  }
+}
+
+output "certificate_arn" {
+  description = "The ARN of the SSL certificate"
+  value       = module.magru_poly_subdomain_certificate.certificate_arn
+}
+
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = module.magru_poly_subdomain_certificate.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+

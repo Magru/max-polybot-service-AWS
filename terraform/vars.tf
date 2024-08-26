@@ -39,3 +39,7 @@ variable "max_az_count" {
   type        = number
   default     = 2
 }
+variable "domain_hosted_zone" {
+  description = "Main domain hosted zone"
+  type        = string
+}
