@@ -93,13 +93,15 @@ def consume():
                     logger.info(upload_res)
 
                     if upload_res["status"] == "success":
+
                         labels_json_string = json.dumps(labels)
+                        chat_id_str = str(sqs_query["chat_id"])
 
                         prediction_response = {
                             'prediction_id': prediction_id,
                             'predicted_img_path': str(object_key),
                             'labels': labels_json_string,
-                            'chat_id': sqs_query["chat_id"]
+                            'chat_id': chat_id_str
                         }
 
                         dynamodb_item = convert_to_dynamodb_format(prediction_response)
