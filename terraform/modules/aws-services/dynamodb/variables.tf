@@ -45,13 +45,14 @@ variable "range_key_type" {
 }
 
 variable "attributes" {
-  description = "List of nested attribute definitionsly required for hash_key and range_key attributes"
+  description = "List of nested attribute definitions, required for hash_key and range_key attributes"
   type = list(object({
     name = string
     type = string
   }))
   default = []
 }
+
 
 variable "global_secondary_indexes" {
   description = "Describe a GSI for the table"

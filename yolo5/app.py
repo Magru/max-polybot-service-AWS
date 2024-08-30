@@ -93,12 +93,12 @@ def consume():
                     logger.info(upload_res)
 
                     if upload_res["status"] == "success":
-                        converted_labels = json.loads(json.dumps(labels), parse_float=Decimal)
+                        labels_json_string = json.dumps(labels)
 
                         prediction_response = {
                             'prediction_id': prediction_id,
                             'predicted_img_path': str(object_key),
-                            'labels': converted_labels,
+                            'labels': labels_json_string,
                             'chat_id': sqs_query["chat_id"]
                         }
 
