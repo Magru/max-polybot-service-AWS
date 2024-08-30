@@ -445,9 +445,9 @@ module "autoscaling_group" {
     yolo5_img_name = var.yolo5_img_name
   }))
 
-  desired_capacity = 0 #1
-  min_size = 0 #1
-  max_size = 0 #2
+  desired_capacity = 1 #1
+  min_size = 1 #1
+  max_size = 2 #2
   vpc_zone_identifier = [module.public_subnets[0].subnet_id, module.public_subnets[1].subnet_id]
 
   tags = {
@@ -565,9 +565,9 @@ resource "aws_lb" "app_alb" {
   }
 }
 resource "aws_lb_target_group" "app_tg" {
-  name        = "${var.project_name_prefix}-app2-tg"
+  name        = "${var.project_name_prefix}-app3-tg"
   port        = 8443
-  protocol    = "HTTPS"
+  protocol    = "HTTP"
   vpc_id      = module.main_vpc.vpc_id
   target_type = "instance"
 
@@ -651,5 +651,23 @@ resource "aws_lb_listener" "https" {
     create_before_destroy = true
   }
 }
+
+# resource "aws_lb_listener" "https_1" {
+#   load_balancer_arn = aws_lb.app_alb.arn
+#   port              = 8443
+#   protocol          = "HTTPS"
+#
+#   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+#   certificate_arn   = module.magru_poly_subdomain_certificate.certificate_arn
+#
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.app_tg.arn
+#   }
+#
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 
