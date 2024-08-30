@@ -325,6 +325,7 @@ output "app_server_private_ips" {
   description = "Private IPs of the application servers"
   value       = module.app_servers[*].instance_private_ip
 }
+
 output "app_server_ids" {
   description = "IDs of the application servers"
   value       = module.app_servers[*].instance_id
