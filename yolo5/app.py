@@ -90,6 +90,7 @@ def consume():
 
                     object_key = f'predicted_images/{prediction_id}_{file_name}'
                     upload_res = s3.upload_file(images_bucket, predicted_img_path, object_key)
+                    logger.info(upload_res)
 
                     if upload_res["status"] == "success":
                         converted_labels = json.loads(json.dumps(labels), parse_float=Decimal)
@@ -97,7 +98,7 @@ def consume():
                         prediction_response = {
                             'prediction_id': prediction_id,
                             'predicted_img_path': str(object_key),
-                            'labels': converted_labels,
+                            'labels': json.dumps(converted_labels),
                             'chat_id': sqs_query["chat_id"]
                         }
 

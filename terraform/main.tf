@@ -88,6 +88,7 @@ module "dynamodb_table" {
     Version     = var.project_build_version
   }
 }
+
 output "db_table_name" {
   value = module.dynamodb_table.table_name
 }
