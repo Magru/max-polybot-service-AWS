@@ -99,7 +99,7 @@ def consume():
 
                         dynamodb_item = convert_to_dynamodb_format(prediction_response)
 
-                        db_res = db.write_to_dynamodb('max-aws-project-db', dynamodb_item)
+                        db_res = db.write_to_dynamodb('max-terraform-project-table', dynamodb_item)
                         if db_res["status"] == "success":
                             sqs_res = sqs.delete_message(queue_name, message["receipt_handle"])
                             response_status = 'ready'
