@@ -44,3 +44,7 @@ variable "domain_hosted_zone" {
   description = "Main domain hosted zone"
   type        = string
 }
+variable "S3_bucket_name" {
+  description = "S3 Bucket Name"
+  type        = string
+}

@@ -46,6 +46,7 @@ EOL
 # Write the .env file
 cat <<EOL > /home/ubuntu/yolo5/.env
 YOLO5_IMG_NAME=${yolo5_img_name}
+BUCKET_NAME=${s3_bucket_name}
 EOL
 
 # Change directory to where docker-compose.yaml is located and run docker-compose up

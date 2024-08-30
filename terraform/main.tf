@@ -416,12 +416,11 @@ module "autoscaling_group" {
   create_launch_template = true
 
   launch_template_name      = "${var.project_name_prefix}-launch-template"
+  update_default_version = true
   image_id                  = var.app_server_instance_ami
   instance_type             = var.yolo5_server_instance_type
   key_name                  = var.app_server_instance_kp_name
   iam_instance_profile_name = module.asg_instance_profile.instance_profile_name
-  #   associate_public_ip_address = true
-  #   security_group_ids = [module.combined_sg.security_group_id]
 
   network_interfaces = [
     {
@@ -443,7 +442,8 @@ module "autoscaling_group" {
   ]
 
   user_data = base64encode(templatefile("${path.module}/templates/deploy-yolo5-asg.tpl", {
-    yolo5_img_name = var.yolo5_img_name
+    yolo5_img_name = var.yolo5_img_name,
+    s3_bucket_name = var.S3_bucket_name
   }))
 
   desired_capacity = 1 #1
