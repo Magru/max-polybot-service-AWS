@@ -98,11 +98,12 @@ def consume():
                         prediction_response = {
                             'prediction_id': prediction_id,
                             'predicted_img_path': str(object_key),
-                            'labels': json.dumps(converted_labels),
+                            'labels': converted_labels,
                             'chat_id': sqs_query["chat_id"]
                         }
 
                         dynamodb_item = convert_to_dynamodb_format(prediction_response)
+                        logger.info(dynamodb_item)
 
                         db_res = db.write_to_dynamodb('max-terraform-project-table', dynamodb_item)
                         logger.info(db_res)
