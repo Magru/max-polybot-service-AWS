@@ -45,7 +45,7 @@ EOL
 
 # Write the .env file
 cat <<EOL > /home/ubuntu/yolo5/.env
-YOLO5_IMG_NAME=magrufol/yolo5:4.0.2
+YOLO5_IMG_NAME=magrufol/${YOLO5_IMG_NAME}
 EOL
 
 # Change directory to where docker-compose.yaml is located and run docker-compose up

@@ -29,6 +29,7 @@ variable "project_build_version" {
 variable "asg_launch_version" {
   description = "Auto Scale Group Launch template version"
   type        = string
+  default     = "$Latest"
 }
 variable "yolo5_img_name" {
   description = "Yolo5 image name"
