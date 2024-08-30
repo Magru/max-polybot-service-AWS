@@ -28,7 +28,7 @@ def results():
     prediction_id = request.args.get('predictionId')
     result_handler = ResultsHandler(prediction_id)
     result_handler.fetch_result()
-
+    logger.info(result_handler)
     if result_handler.result["status"] == "success":
         if result_handler.result["predicted_image_path"]["result"] == "success":
             bot.send_photo(result_handler.chat_id,

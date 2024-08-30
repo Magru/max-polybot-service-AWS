@@ -48,10 +48,6 @@ module "dynamodb_table" {
       type = "S"
     },
     {
-      name = "labels"
-      type = "S"
-    },
-    {
       name = "predicted_img_path"
       type = "S"
     }
@@ -68,13 +64,6 @@ module "dynamodb_table" {
     {
       name            = "ImagePathIndex"
       hash_key        = "predicted_img_path"
-      range_key       = "prediction_id"
-      projection_type = "ALL"
-      non_key_attributes = []
-    },
-    {
-      name            = "LabelsIndex"
-      hash_key        = "labels"
       range_key       = "prediction_id"
       projection_type = "ALL"
       non_key_attributes = []
