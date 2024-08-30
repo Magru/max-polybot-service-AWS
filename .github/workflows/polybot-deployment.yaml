@@ -38,10 +38,9 @@ jobs:
       id: capture-output
       run: |
         echo "Capturing instance IPs..."
+        terraform output -json app_server_public_ips
         APP_SERVER_IP=$(terraform output -json app_server_public_ips | jq -r '.[0]')
         APP_SERVER_2_IP=$(terraform output -json app_server_public_ips | jq -r '.[1]')
-        echo "First instance IP: ${APP_SERVER_IP}"
-        echo "Second instance IP: ${APP_SERVER_2_IP}"
         echo "APP_SERVER_IP=${APP_SERVER_IP}" >> $GITHUB_ENV
         echo "APP_SERVER_2_IP=${APP_SERVER_2_IP}" >> $GITHUB_ENV
 #        echo "APP_SERVER_IP=3.8.175.178" >> $GITHUB_ENV
