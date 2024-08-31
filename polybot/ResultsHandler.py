@@ -19,7 +19,7 @@ class ResultsHandler:
     def fetch_result(self):
         try:
             response = self.dynamodb.get_item(
-                TableName='max-aws-project-db',
+                TableName='max-terraform-project-table',
                 Key={
                     'prediction_id': {
                         'S': self.predict_id
