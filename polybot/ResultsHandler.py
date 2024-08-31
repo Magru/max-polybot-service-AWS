@@ -31,7 +31,7 @@ class ResultsHandler:
             if item:
                 predicted_img = self.download_image(item, self.predict_id)
                 try:
-                    self.chat_id = item.get('chat_id', {}).get('N')
+                    self.chat_id = item.get('chat_id', {}).get('S')
                 except Exception as e:
                     logger.error(f"Error extracting chat_id: {str(e)}")
                     self.result = {
