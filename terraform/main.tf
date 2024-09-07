@@ -257,6 +257,27 @@ output "sqs_queue_arn" {
   value       = module.sqs_queue.queue_arn
 }
 
+# Read the existing secret value so that we only update the MX_SQS_ENDPOINT
+data "aws_secretsmanager_secret" "max_aws_project" {
+  name = var.Secret_manager_id  # Name of the secret from your screenshot
+}
+
+data "aws_secretsmanager_secret_version" "existing_secret_version" {
+  secret_id = data.aws_secretsmanager_secret.max_aws_project.id
+}
+
+# Update only the MX_SQS_ENDPOINT key
+resource "aws_secretsmanager_secret_version" "update_sqs_endpoint" {
+  secret_id     = var.Secret_manager_id
+  secret_string = jsonencode(
+    merge(
+      jsondecode(data.aws_secretsmanager_secret_version.existing_secret_version.secret_string),  # Fetch the existing values
+      {
+        MX_SQS_ENDPOINT = module.sqs_queue.queue_arn  # Update only this value
+      }
+    )
+  )
+}
 
 
   module "ec2_role_policy" {

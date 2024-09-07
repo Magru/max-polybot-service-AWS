@@ -48,3 +48,7 @@ variable "S3_bucket_name" {
   description = "S3 Bucket Name"
   type        = string
 }
+variable "Secret_manager_id" {
+  description = "AWS Secret Manager ID"
+  type        = string
+}

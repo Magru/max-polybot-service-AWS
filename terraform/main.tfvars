@@ -9,3 +9,4 @@ asg_launch_version=3
 yolo5_img_name="magrufol/yolo5:5.0.7"
 domain_hosted_zone="Z01194351X4YEXPPLZ8MN"
 S3_bucket_name="max-yolo5"
+Secret_manager_id="max-aws-project"
