@@ -6,7 +6,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 
-class Utils:
+class AWSUtils:
     class UtilsException(Exception):
         pass
 
@@ -16,12 +16,12 @@ class Utils:
         s3_bucket_name = os.getenv('BUCKET_NAME')
         if not s3_bucket_name:
             logger.error("Environment variable 'BUCKET_NAME' not set.")
-            raise Utils.UtilsException("Environment variable 'BUCKET_NAME' not set.")
+            raise AWSUtils.UtilsException("Environment variable 'BUCKET_NAME' not set.")
 
         s3_client = boto3.client('s3')
 
         if add_unique:
-            object_name = Utils._add_unique_identifier(object_name)
+            object_name = AWSUtils._add_unique_identifier(object_name)
 
         try:
             s3_client.upload_file(file_name, s3_bucket_name, object_name)
@@ -39,11 +39,11 @@ class Utils:
 
     @staticmethod
     def get_secret(name, secret_name="max-aws-project", region_name="eu-west-2"):
-        client = Utils._create_secrets_manager_client(region_name)
+        client = AWSUtils._create_secrets_manager_client(region_name)
 
-        secret_string = Utils._get_secret_string(client, secret_name)
+        secret_string = AWSUtils._get_secret_string(client, secret_name)
 
-        secret = Utils._parse_secret_string(secret_string)
+        secret = AWSUtils._parse_secret_string(secret_string)
 
         if name not in secret:
             error_message = f"The name '{name}' does not exist in the secret."
@@ -66,7 +66,7 @@ class Utils:
             return get_secret_value_response.get('SecretString')
         except ClientError as e:
             logger.error(f"Failed to retrieve secret: {e}")
-            raise Utils.UtilsException(f"Failed to retrieve secret: {e}")
+            raise AWSUtils.UtilsException(f"Failed to retrieve secret: {e}")
 
     @staticmethod
     def _parse_secret_string(secret_string):
@@ -75,4 +75,4 @@ class Utils:
             return json.loads(secret_string)
         except (json.JSONDecodeError, TypeError) as e:
             logger.error(f"Error decoding secret: {e}")
-            raise Utils.UtilsException(f"Error decoding secret: {e}")
+            raise AWSUtils.UtilsException(f"Error decoding secret: {e}")
