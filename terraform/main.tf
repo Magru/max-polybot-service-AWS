@@ -302,7 +302,7 @@ resource "aws_secretsmanager_secret_version" "update_sqs_endpoint" {
         Sid      = "SQSPermissions"
         Effect   = "Allow"
         Action = ["sqs:SendMessage"]
-        Resource = "arn:aws:sqs:eu-west-2:019273956931:max-aws-project-sqs.fifo"
+        Resource = module.sqs_queue.sqs_queue_arn
       },
       {
         Sid      = "DynamoDBPermissions"
