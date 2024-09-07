@@ -10,11 +10,9 @@ import os
 import boto3
 from AWS import AWS
 import requests
-from utils import AWSUtils
 
 images_bucket = os.environ['BUCKET_NAME']
-# queue_name = os.environ['SQS_QUEUE_NAME']
-queue_name = AWSUtils.get_secret('MX_SQS_ENDPOINT')
+queue_name = os.environ['SQS_QUEUE_NAME']
 
 sqs_client = boto3.client('sqs', region_name='eu-west-2')
 
