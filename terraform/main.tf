@@ -257,6 +257,11 @@ output "sqs_queue_arn" {
   value       = module.sqs_queue.queue_arn
 }
 
+output "sqs_queue_url" {
+  description = "The SQS Queue URL"
+  value       = module.sqs_queue.queue_url  # This needs to be defined in the SQS module
+}
+
 # Read the existing secret value so that we only update the MX_SQS_ENDPOINT
 data "aws_secretsmanager_secret" "max_aws_project" {
   name = var.Secret_manager_id  # Name of the secret from your screenshot
@@ -273,7 +278,7 @@ resource "aws_secretsmanager_secret_version" "update_sqs_endpoint" {
     merge(
       jsondecode(data.aws_secretsmanager_secret_version.existing_secret_version.secret_string), # Fetch the existing values
       {
-        MX_SQS_ENDPOINT = module.sqs_queue.queue_arn  # Update only this value
+        MX_SQS_ENDPOINT = module.sqs_queue.queue_url  # Update only this value
       }
     )
   )
